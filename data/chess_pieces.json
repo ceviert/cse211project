@@ -6,7 +6,7 @@
     },
     "pieces": [
         {
-            "type": "pawn",
+            "type": "PAWN",
             "positions": {
                 "white": [
                     {"x": 0, "y": 1},
@@ -40,7 +40,7 @@
               "count": 16
         },
         {
-            "type": "rook",
+            "type": "ROOK",
             "positions": {
                 "white": [
                     {"x": 0, "y": 0},
@@ -62,7 +62,7 @@
               "count": 4
         },
         {
-            "type": "knight",
+            "type": "KNIGHT",
             "positions": {
                 "white": [
                     {"x": 1, "y": 0},
@@ -82,6 +82,69 @@
                 "diagonal_capture": 0
               },
               "count": 4
+        },
+        {
+            "type": "BISHOP",
+            "positions": {
+                "white": [
+                    {"x": 2, "y": 0},
+                    {"x": 5, "y": 0}
+                ],
+                "black": [
+                    {"x": 2, "y": 7},
+                    {"x": 5, "y": 7}
+                ]
+            },
+            "movement": {
+                "forward": 0,
+                "sideways": 0,
+                "diagonal": 1,
+                "l_shape": false,
+                "first_move_forward": 0,
+                "diagonal_capture": 0
+              },
+              "count": 4
+        },
+        {
+            "type": "QUEEN",
+            "positions": {
+                "white": [
+                    {"x": 3, "y": 0}
+                ],
+                "black": [
+                    {"x": 3, "y": 7}
+                ]
+            },
+            "movement": {
+                "forward": 1,
+                "sideways": 1,
+                "diagonal": 1,
+                "l_shape": false,
+                "first_move_forward": 0,
+                "diagonal_capture": 0
+              },
+              "count": 2
+        },
+        {
+            "type": "KING",
+            "positions": {
+                "white": [
+                    {"x": 4, "y": 0}
+                ],
+                "black": [
+                    {"x": 4, "y": 7}
+                ]
+            },
+            "movement": {
+                "_comment": "using 2 to represent that king can only move one tile to those directions.",
+                "forward": 2,
+                "sideways": 2,
+                "diagonal": 2,
+                "l_shape": false,
+                "first_move_forward": 0,
+                "diagonal_capture": 0
+              },
+              "count": 2
         }
     ]
 }
