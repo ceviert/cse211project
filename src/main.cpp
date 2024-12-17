@@ -100,5 +100,9 @@ int main(int argc, char* argv[]) {
     printPortalConfig(portal);
   }
 
+  // ben yazdım altını
+
+  
+
   return 0;
 }
