@@ -1,8 +1,8 @@
 {
     "game_settings": {
-        "name": "Satranç",
+        "name": "chess",
         "board_size": 64,
-        "turn_limit": 1
+        "turn_limit": 100
     },
     "pieces": [
         {
@@ -37,7 +37,7 @@
                 "first_move_forward": 2,
                 "diagonal_capture": 1
               },
-              "count": 16
+              "count": 8
         },
         {
             "type": "rook",
@@ -52,14 +52,14 @@
                 ]
             },
             "movement": {
-                "forward": 1,
-                "sideways": 1,
+                "forward": 8,
+                "sideways": 8,
                 "diagonal": 0,
                 "l_shape": false,
                 "first_move_forward": 0,
                 "diagonal_capture": 0
               },
-              "count": 4
+              "count": 2
         },
         {
             "type": "knight",
@@ -81,7 +81,69 @@
                 "first_move_forward": 0,
                 "diagonal_capture": 0
               },
-              "count": 4
+              "count": 2
+        },
+        {
+            "type": "bishop",
+            "positions": {
+                "white": [
+                    {"x": 2, "y": 0},
+                    {"x": 5, "y": 0}
+                ],
+                "black": [
+                    {"x": 2, "y": 7},
+                    {"x": 5, "y": 7}
+                ]
+            },
+            "movement": {
+                "forward": 0,
+                "sideways": 0,
+                "diagonal": 8,
+                "l_shape": false,
+                "first_move_forward": 0,
+                "diagonal_capture": 0
+              },
+              "count": 2
+        },
+        {
+            "type": "queen",
+            "positions": {
+                "white": [
+                    {"x": 3, "y": 0}
+                ],
+                "black": [
+                    {"x": 3, "y": 7}
+                ]
+            },
+            "movement": {
+                "forward": 8,
+                "sideways": 8,
+                "diagonal": 8,
+                "l_shape": false,
+                "first_move_forward": 0,
+                "diagonal_capture": 0
+              },
+              "count": 1
+        },
+        {
+            "type": "king",
+            "positions": {
+                "white": [
+                    {"x": 4, "y": 0}
+                ],
+                "black": [
+                    {"x": 4, "y": 7}
+                ]
+            },
+            "movement": {
+                "forward": 1,
+                "sideways": 1,
+                "diagonal": 1,
+                "l_shape": false,
+                "first_move_forward": 0,
+                "diagonal_capture": 0
+              },
+              "count": 1
         }
     ]
 }
