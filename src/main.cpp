@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "ConfigReader.hpp"
+#include "ChessBoard.hpp"
 
 // Helper function to print positions
 void printPosition(const Position& pos) {
