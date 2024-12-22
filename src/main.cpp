@@ -62,6 +62,24 @@ void printPortalConfig(const PortalConfig& portal) {
   std::cout << "\n  Cooldown: " << portal.properties.cooldown << "\n";
 }
 
+// Helper function to print chess board
+void printBoard(const ChessBoard& board) {
+  std::vector<std::vector<ChessTile>> tiles = board.getChessTiles();
+  std::cout << "     A  B  C  D  E  F  G  H\n    ------------------------" << std::endl;
+  for (int i = 0; i < board.getSqrtOfBoardSize(); i++) {
+    std::cout << i+1 << " | ";
+    for (int j = 0; j < board.getSqrtOfBoardSize(); j++) {
+      if (tiles[i][j].isOccupied) {
+        std::cout << "[" << tiles[i][j].getPieceRepresentation() << "]";
+      }
+      else {
+        std::cout << "[ ]";
+      }
+    }
+    std::cout << std::endl;
+  }
+}
+
 int main(int argc, char* argv[]) {
   if (argc != 2) {
     std::cerr << "Usage: " << argv[0] << " <config_file>\n";
@@ -103,7 +121,12 @@ int main(int argc, char* argv[]) {
 
   // ben yazdım altını
 
-  
+  // initialize board
+  ChessBoard myBoard(reader.getGameSettings().board_size);
+
+  myBoard.populateBoard(reader.getPieceConfigs());
+
+  printBoard(myBoard);
 
   return 0;
 }

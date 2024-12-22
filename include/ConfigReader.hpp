@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
+#include <cmath>
 
 /**
  * @brief Structure to hold position coordinates
