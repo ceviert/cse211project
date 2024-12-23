@@ -1,6 +1,9 @@
 #pragma once
 
+#include <iostream>
+
 #include "ConfigReader.hpp"
+#include "Color.hpp"
 
 /**
  * @brief Structure to hold tile properties
@@ -24,7 +27,7 @@ struct ChessTile {
       else if (type == "queen") return 'Q';
       else if (type == "king") return 'K';
     }
-    if (!white) {
+    else {
       if (type == "pawn") return 'p';
       else if (type == "rook") return 'r';
       else if (type == "knight") return 'n';
@@ -80,4 +83,9 @@ class ChessBoard {
      * @return True if successful
      */
     bool populateBoard(std::vector<PieceConfig> piece_configs);
+
+    /**
+     * @brief Prints the chess board
+     */
+    void print();
 };

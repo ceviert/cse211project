@@ -1,7 +1,8 @@
 {
     "game_settings": {
         "name": "chess",
-        "board_size": 64,
+        "_comment": "functional up to board_size = 728",
+        "board_size": 64, 
         "turn_limit": 100
     },
     "pieces": [

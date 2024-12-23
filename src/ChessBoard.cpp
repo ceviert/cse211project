@@ -43,3 +43,39 @@ bool ChessBoard::populateBoard(std::vector<PieceConfig> piece_configs) {
   buildBoard(piece_configs);
   return true;
 }
+
+void ChessBoard::print() {
+  std::vector<std::vector<ChessTile>> tiles = getChessTiles();
+  std::cout << "      ";
+  for (int ascii = 65; ascii < getSqrtOfBoardSize()+65; ascii++ ) {
+    std::cout << static_cast<char>(ascii) << "  ";
+  }
+  std::cout << "\n     ";
+  for (int i = 0; i < 3*getSqrtOfBoardSize(); i++) {
+    std::cout << "-";
+  }
+  std::cout << std::endl;
+  for (int i = 0; i < getSqrtOfBoardSize(); i++) {
+    std::cout << std::setw(2) << i+1 << " | ";
+    for (int j = 0; j < getSqrtOfBoardSize(); j++) {
+      if ((i + j) % 2 == 0) { // WHITE TILE
+        if (tiles[i][j].isOccupied) {
+          std::cout << Color::WHITE_BG << "\033[30m " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+        }
+        else {
+          std::cout << Color::WHITE_BG << "   " << Color::RESET;
+        }
+      }
+      else { // BLACK TILE
+        if (tiles[i][j].isOccupied) {
+          std::cout << Color::BLACK_BG << " " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+        }
+        else {
+          std::cout << Color::BLACK_BG << "   " << Color::RESET;
+        }
+      }
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+}
