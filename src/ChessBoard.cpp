@@ -79,3 +79,13 @@ void ChessBoard::print() {
   }
   std::cout << std::endl;
 }
+
+bool ChessBoard::move(Position from, Position to) {
+  ChessTile piece = tiles_[from.y][from.x];
+  if (!piece.isOccupied) { // TILE IS EMPTY
+    return false;
+  }
+  tiles_[from.y][from.x].isOccupied = false;
+  tiles_[to.y][to.x] = piece;
+  return true;
+}

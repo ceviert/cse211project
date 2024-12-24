@@ -9,11 +9,12 @@
  * @brief Structure to hold tile properties
  */
 struct ChessTile {
-  bool isOccupied;
+  bool isOccupied = false;
   std::string type;
   Position position;
   MovementRules movement;
   bool white;
+
   /**
    * @brief Get the single char representation of chess pieces
    * @return Character of chess piece type representation
@@ -88,4 +89,12 @@ class ChessBoard {
      * @brief Prints the chess board
      */
     void print();
+
+    /**
+     * @brief Move the piece
+     * @param from The position of the piece to be moved
+     * @param to The position piece will be moved to
+     * @return True if valid move
+     */
+    bool move(Position from, Position to);
 };

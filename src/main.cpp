@@ -110,5 +110,19 @@ int main(int argc, char* argv[]) {
 
   myBoard.print();
 
+  Position from{0,5};
+  Position to{0,5};
+
+  if (!myBoard.move(from,to)) std::cout << "invalid move" << std::endl;
+
+  myBoard.print();
+
+  Position from1{0,5};
+  Position to1{0,7};
+
+  myBoard.move(from1,to1);
+
+  myBoard.print();
+
   return 0;
 }
