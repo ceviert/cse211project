@@ -14,6 +14,7 @@ struct ChessTile {
   Position position;
   MovementRules movement;
   bool white;
+  bool moveable_tile;
 
   /**
    * @brief Get the single char representation of chess pieces
@@ -27,6 +28,7 @@ struct ChessTile {
       else if (type == "bishop") return 'B';
       else if (type == "queen") return 'Q';
       else if (type == "king") return 'K';
+      else return '?';
     }
     else {
       if (type == "pawn") return 'p';
@@ -35,8 +37,14 @@ struct ChessTile {
       else if (type == "bishop") return 'b';
       else if (type == "queen") return 'q';
       else if (type == "king") return 'k';
+      else return '?';
     }
   }
+};
+
+struct PiecePosition {
+  char x;
+  int y;
 };
 
 /**
