@@ -60,18 +60,38 @@ void ChessBoard::print() {
     for (int j = 0; j < getSqrtOfBoardSize(); j++) {
       if ((i + j) % 2 == 0) { // WHITE TILE
         if (tiles[i][j].isOccupied) {
-          std::cout << Color::WHITE_BG << "\033[30m " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+          if (tiles[i][j].selected_tile) {
+            std::cout << Color::BLUE_BG << "\033[30m " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+          }
+          else {
+            std::cout << Color::WHITE_BG << "\033[30m " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+          }
         }
         else {
-          std::cout << Color::WHITE_BG << "   " << Color::RESET;
+          if (tiles[i][j].selected_tile) {
+            std::cout << Color::BLUE_BG << "   " << Color::RESET;  
+          }
+          else {
+            std::cout << Color::WHITE_BG << "   " << Color::RESET;
+          }
         }
       }
       else { // BLACK TILE
         if (tiles[i][j].isOccupied) {
-          std::cout << Color::BLACK_BG << " " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+          if (tiles[i][j].selected_tile) {
+            std::cout << Color::BLUE_BG << " " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+          }
+          else {
+            std::cout << Color::BLACK_BG << " " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+          }
         }
         else {
-          std::cout << Color::BLACK_BG << "   " << Color::RESET;
+          if (tiles[i][j].selected_tile) {
+            std::cout << Color::BLUE_BG << "   " << Color::RESET;  
+          }
+          else {
+            std::cout << Color::BLACK_BG << "   " << Color::RESET;
+          }
         }
       }
     }
@@ -88,4 +108,34 @@ bool ChessBoard::move(Position from, Position to) {
   tiles_[from.y][from.x].isOccupied = false;
   tiles_[to.y][to.x] = piece;
   return true;
+}
+
+Position convertToPosition(PiecePosition input) {
+  Position pos;
+  char ch = input.x;
+  pos.x = static_cast<int>(ch) - 97;
+  pos.y = input.y - 1;
+  return pos;
+}
+
+bool ChessBoard::select(PiecePosition selection) {
+  Position pos = convertToPosition(selection);
+  if (tiles_[pos.y][pos.x].isOccupied) { // A PIECE IS SELECTED
+    tiles_[pos.y][pos.x].selected_tile = true;
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+bool ChessBoard::unselect(PiecePosition selection) {
+  Position pos = convertToPosition(selection);
+  if (tiles_[pos.y][pos.x].selected_tile) { // PIECE TO UNSELECT IS A PIECE THAT HAS SELECTED BEFORE
+    tiles_[pos.y][pos.x].selected_tile = false;
+    return true;
+  }
+  else {
+    return false;
+  }
 }

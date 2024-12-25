@@ -14,7 +14,8 @@ struct ChessTile {
   Position position;
   MovementRules movement;
   bool white;
-  bool moveable_tile;
+  bool moveable_into_tile;
+  bool selected_tile;
 
   /**
    * @brief Get the single char representation of chess pieces
@@ -46,6 +47,8 @@ struct PiecePosition {
   char x;
   int y;
 };
+
+Position convertToPosition(PiecePosition input);
 
 /**
  * @brief Class responsible for initializing, populating and updating the chess board
@@ -105,4 +108,8 @@ class ChessBoard {
      * @return True if valid move
      */
     bool move(Position from, Position to);
+
+    bool select(PiecePosition selection);
+
+    bool unselect(PiecePosition selection);
 };

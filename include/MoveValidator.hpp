@@ -23,16 +23,3 @@ Position l_shape_directions[8] = {
   {-2,-1}, // LEFT L FACING UP
   {-2,1}   // LEFT L FACING DOWN 
 };
-
-class MoveValidator {
-  private:
-    ChessTile from_;
-    ChessTile to_;
-
-  public:
-    
-    MoveValidator(ChessTile from, ChessTile to);
-    
-};
-
-bool isValid();

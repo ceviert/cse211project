@@ -117,5 +117,15 @@ int main(int argc, char* argv[]) {
 
   myBoard.print();
 
+  PiecePosition input_position{'d',2};
+
+  myBoard.select(input_position);
+
+  myBoard.print();
+
+  myBoard.unselect(input_position);
+
+  myBoard.print();
+
   return 0;
 }
