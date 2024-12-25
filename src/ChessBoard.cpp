@@ -13,16 +13,16 @@ void ChessBoard::buildBoard(std::vector<PieceConfig> piece_configs) {
     for (const auto& pos : piece.black_positions) {
       tiles_[pos.y][pos.x].white = false;
       tiles_[pos.y][pos.x].position = pos;
-      tiles_[pos.y][pos.x].isOccupied = true;
+      tiles_[pos.y][pos.x].tile_type.is_occupied = true;
       tiles_[pos.y][pos.x].movement = piece.movement;
-      tiles_[pos.y][pos.x].type = piece.type;
+      tiles_[pos.y][pos.x].piece_type = piece.type;
     }
     for (const auto& pos : piece.white_positions) {
       tiles_[pos.y][pos.x].white = true;
       tiles_[pos.y][pos.x].position = pos;
-      tiles_[pos.y][pos.x].isOccupied = true;
+      tiles_[pos.y][pos.x].tile_type.is_occupied = true;
       tiles_[pos.y][pos.x].movement = piece.movement;
-      tiles_[pos.y][pos.x].type = piece.type;
+      tiles_[pos.y][pos.x].piece_type = piece.type;
     }
   }
 }
@@ -37,6 +37,15 @@ int ChessBoard::getBoardSize() const {
 
 int ChessBoard::getSqrtOfBoardSize() const {
   return sqrt_of_board_size_;
+}
+
+TILE_PROPERTIES getTileProperty(ChessTile tile) {
+  const auto& type = tile.tile_type;
+  if (type.capturable_tile) return CAPTURABLE;
+  else if (type.moveable_into_tile) return MOVEABLE_INTO;
+  else if (type.normal_tile) return NORMAL;
+  else if (type.selected_tile) return SELECTED;
+  else return NORMAL;
 }
 
 bool ChessBoard::populateBoard(std::vector<PieceConfig> piece_configs) {
@@ -58,39 +67,62 @@ void ChessBoard::print() {
   for (int i = 0; i < getSqrtOfBoardSize(); i++) {
     std::cout << std::setw(2) << i+1 << " | ";
     for (int j = 0; j < getSqrtOfBoardSize(); j++) {
-      if ((i + j) % 2 == 0) { // WHITE TILE
-        if (tiles[i][j].isOccupied) {
-          if (tiles[i][j].selected_tile) {
-            std::cout << Color::BLUE_BG << "\033[30m " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
-          }
-          else {
-            std::cout << Color::WHITE_BG << "\033[30m " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+      ChessTile tile = tiles[i][j];
+      TILE_PROPERTIES prop = getTileProperty(tile);
+      bool is_white_tile = (i + j) % 2 == 0;
+      if (is_white_tile) { // WHITE TILE
+        if (tile.tile_type.is_occupied) { // OCCUPIED
+          switch (prop) {
+            case NORMAL:
+              std::cout << Color::WHITE_BG << "\033[30mWBG " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
+            case MOVEABLE_INTO:
+              std::cout << Color::ORANGE_ON_WHITE_BG << "\033[30mOOWBG " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
+            case SELECTED:
+              std::cout << Color::BLUE_BG << "BLBG " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
+            case CAPTURABLE:
+              std::cout << Color::RED_BG << "RBG " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
           }
         }
         else {
-          if (tiles[i][j].selected_tile) {
-            std::cout << Color::BLUE_BG << "   " << Color::RESET;  
-          }
-          else {
-            std::cout << Color::WHITE_BG << "   " << Color::RESET;
+          switch (prop) { // NOT OCCUPIED
+            case NORMAL:
+              std::cout << Color::WHITE_BG << "\033[30mWBG   " << Color::RESET;
+              break;
+            case MOVEABLE_INTO:
+              std::cout << Color::ORANGE_ON_WHITE_BG << "OOWBG   " << Color::RESET;  
+              break;
           }
         }
       }
       else { // BLACK TILE
-        if (tiles[i][j].isOccupied) {
-          if (tiles[i][j].selected_tile) {
-            std::cout << Color::BLUE_BG << " " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
-          }
-          else {
-            std::cout << Color::BLACK_BG << " " << tiles[i][j].getPieceRepresentation() << " " << Color::RESET;
+        if (tile.tile_type.is_occupied) { // OCCUPIED
+          switch (prop) {
+            case NORMAL:
+              std::cout << Color::BLACK_BG << "BBG " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
+            case MOVEABLE_INTO:
+              std::cout << Color::ORANGE_ON_BLACK_BG << "OOBBG " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
+            case SELECTED:
+              std::cout << Color::BLUE_BG << "BLBG " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
+            case CAPTURABLE:
+              std::cout << Color::RED_BG << "RBG " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
           }
         }
         else {
-          if (tiles[i][j].selected_tile) {
-            std::cout << Color::BLUE_BG << "   " << Color::RESET;  
-          }
-          else {
-            std::cout << Color::BLACK_BG << "   " << Color::RESET;
+          switch (prop) { // NOT OCCUPIED
+            case NORMAL:
+              std::cout << Color::BLACK_BG << "BBG   " << Color::RESET;
+              break;
+            case MOVEABLE_INTO:
+              std::cout << Color::ORANGE_ON_BLACK_BG << "OOBBG   " << Color::RESET;  
+              break;
           }
         }
       }
@@ -101,12 +133,12 @@ void ChessBoard::print() {
 }
 
 bool ChessBoard::move(Position from, Position to) {
-  ChessTile piece = tiles_[from.y][from.x];
-  if (!piece.isOccupied) { // TILE IS EMPTY
+  ChessTile tile = tiles_[from.y][from.x];
+  if (!tile.tile_type.is_occupied) { // TILE IS EMPTY
     return false;
   }
-  tiles_[from.y][from.x].isOccupied = false;
-  tiles_[to.y][to.x] = piece;
+  tiles_[from.y][from.x].tile_type.is_occupied = false;
+  tiles_[to.y][to.x] = tile;
   return true;
 }
 
@@ -120,8 +152,8 @@ Position convertToPosition(PiecePosition input) {
 
 bool ChessBoard::select(PiecePosition selection) {
   Position pos = convertToPosition(selection);
-  if (tiles_[pos.y][pos.x].isOccupied) { // A PIECE IS SELECTED
-    tiles_[pos.y][pos.x].selected_tile = true;
+  if (tiles_[pos.y][pos.x].tile_type.is_occupied) { // A PIECE IS SELECTED
+    tiles_[pos.y][pos.x].tile_type.is_occupied = true;
     return true;
   }
   else {
@@ -131,8 +163,8 @@ bool ChessBoard::select(PiecePosition selection) {
 
 bool ChessBoard::unselect(PiecePosition selection) {
   Position pos = convertToPosition(selection);
-  if (tiles_[pos.y][pos.x].selected_tile) { // PIECE TO UNSELECT IS A PIECE THAT HAS SELECTED BEFORE
-    tiles_[pos.y][pos.x].selected_tile = false;
+  if (tiles_[pos.y][pos.x].tile_type.selected_tile) { // PIECE TO UNSELECT IS A PIECE THAT HAS SELECTED BEFORE
+    tiles_[pos.y][pos.x].tile_type.selected_tile = false;
     return true;
   }
   else {

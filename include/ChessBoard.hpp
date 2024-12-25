@@ -5,17 +5,23 @@
 #include "ConfigReader.hpp"
 #include "Color.hpp"
 
+struct TileType {
+  bool is_occupied{false};
+  bool normal_tile{false};
+  bool moveable_into_tile{false};
+  bool selected_tile{false};
+  bool capturable_tile{false};
+};
+
 /**
  * @brief Structure to hold tile properties
  */
 struct ChessTile {
-  bool isOccupied = false;
-  std::string type;
+  TileType tile_type;
+  std::string piece_type;
   Position position;
   MovementRules movement;
   bool white;
-  bool moveable_into_tile;
-  bool selected_tile;
 
   /**
    * @brief Get the single char representation of chess pieces
@@ -23,21 +29,21 @@ struct ChessTile {
    */
   char getPieceRepresentation() {
     if (white) {
-      if (type == "pawn") return 'P';
-      else if (type == "rook") return 'R';
-      else if (type == "knight") return 'N';
-      else if (type == "bishop") return 'B';
-      else if (type == "queen") return 'Q';
-      else if (type == "king") return 'K';
+      if (piece_type == "pawn") return 'P';
+      else if (piece_type == "rook") return 'R';
+      else if (piece_type == "knight") return 'N';
+      else if (piece_type == "bishop") return 'B';
+      else if (piece_type == "queen") return 'Q';
+      else if (piece_type == "king") return 'K';
       else return '?';
     }
     else {
-      if (type == "pawn") return 'p';
-      else if (type == "rook") return 'r';
-      else if (type == "knight") return 'n';
-      else if (type == "bishop") return 'b';
-      else if (type == "queen") return 'q';
-      else if (type == "king") return 'k';
+      if (piece_type == "pawn") return 'p';
+      else if (piece_type == "rook") return 'r';
+      else if (piece_type == "knight") return 'n';
+      else if (piece_type == "bishop") return 'b';
+      else if (piece_type == "queen") return 'q';
+      else if (piece_type == "king") return 'k';
       else return '?';
     }
   }
@@ -48,7 +54,15 @@ struct PiecePosition {
   int y;
 };
 
+enum TILE_PROPERTIES {
+  NORMAL,
+  MOVEABLE_INTO,
+  SELECTED,
+  CAPTURABLE
+};
+
 Position convertToPosition(PiecePosition input);
+TILE_PROPERTIES getTileProperty(ChessTile tile);
 
 /**
  * @brief Class responsible for initializing, populating and updating the chess board
