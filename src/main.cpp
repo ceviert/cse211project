@@ -4,6 +4,7 @@
 
 #include "ConfigReader.hpp"
 #include "ChessBoard.hpp"
+#include "MoveValidator.hpp"
 
 // Helper function to print positions
 void printPosition(const Position& pos) {
@@ -106,6 +107,8 @@ int main(int argc, char* argv[]) {
   // initialize board
   ChessBoard myBoard(reader.getGameSettings().board_size);
 
+  MoveValidator validator(myBoard);
+
   myBoard.populateBoard(reader.getPieceConfigs());
 
   myBoard.print();
@@ -117,7 +120,7 @@ int main(int argc, char* argv[]) {
 
   myBoard.print();
 
-  PiecePosition input_position{'d',2};
+  InputPosition input_position{'a',6};
 
   myBoard.select(input_position);
 
