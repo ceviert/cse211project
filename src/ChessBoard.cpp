@@ -27,7 +27,7 @@ void ChessBoard::buildBoard(std::vector<PieceConfig> piece_configs) {
   }
 }
 
-const std::vector<std::vector<ChessTile>>& ChessBoard::getChessTiles() const {
+std::vector<std::vector<ChessTile>>& ChessBoard::getChessTiles() {
   return tiles_;
 }
 
@@ -90,7 +90,7 @@ void ChessBoard::print() {
         else {
           switch (prop) { // NOT OCCUPIED
             case NORMAL:
-              std::cout << Color::WHITE_BG << "\033[30m   " << Color::RESET;
+              std::cout << Color::WHITE_BG << "   " << Color::RESET;
               break;
             case MOVEABLE_INTO:
               std::cout << Color::ORANGE_ON_WHITE_BG << "   " << Color::RESET;  
@@ -178,6 +178,7 @@ bool ChessBoard::unselect(InputPosition selection) {
   Position pos = convertToPosition(selection);
   if (tiles_[pos.y][pos.x].tile_type.selected_tile) { // PIECE TO UNSELECT IS A PIECE THAT HAS SELECTED BEFORE
     tiles_[pos.y][pos.x].tile_type.selected_tile = false;
+    tiles_[pos.y][pos.x].tile_type.moveable_into_tile = false;
     return true;
   }
   else {

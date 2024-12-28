@@ -124,9 +124,13 @@ int main(int argc, char* argv[]) {
 
   myBoard.select(input_position);
 
+  validator.setMoveableIntoPositions(input_position);
+
   myBoard.print();
 
   myBoard.unselect(input_position);
+
+  validator.clearMoveableIntoPositions();
 
   myBoard.print();
 
