@@ -178,7 +178,6 @@ bool ChessBoard::unselect(InputPosition selection) {
   Position pos = convertToPosition(selection);
   if (tiles_[pos.y][pos.x].tile_type.selected_tile) { // PIECE TO UNSELECT IS A PIECE THAT HAS SELECTED BEFORE
     tiles_[pos.y][pos.x].tile_type.selected_tile = false;
-    tiles_[pos.y][pos.x].tile_type.moveable_into_tile = false;
     return true;
   }
   else {

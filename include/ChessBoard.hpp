@@ -5,6 +5,9 @@
 #include "ConfigReader.hpp"
 #include "Color.hpp"
 
+/**
+ * @brief Structure to hold tile type
+ */
 struct TileType {
   bool is_occupied{false};
   bool normal_tile{false};
@@ -14,7 +17,7 @@ struct TileType {
 };
 
 /**
- * @brief Structure to hold tile properties
+ * @brief Structure to hold chess tile
  */
 struct ChessTile {
   TileType tile_type;
@@ -49,11 +52,17 @@ struct ChessTile {
   }
 };
 
+/**
+ * @brief Structure to hold input position
+ */
 struct InputPosition {
   char x;
   int y;
 };
 
+/**
+ * @brief Tile Properties
+ */
 enum TILE_PROPERTIES {
   NORMAL,
   MOVEABLE_INTO,
@@ -61,7 +70,18 @@ enum TILE_PROPERTIES {
   CAPTURABLE
 };
 
+/**
+ * @brief Converts InputPositon type to Position type
+ * @param input Input position to be converted
+ * @return Same position in Position type
+ */
 Position convertToPosition(InputPosition input);
+
+/**
+ * @brief Get tile property
+ * @param tile The tile which the properties will be extracted
+ * @return Property in TILE_PROPERTIES enumarated type
+ */
 TILE_PROPERTIES getTileProperty(ChessTile tile);
 
 /**
@@ -116,15 +136,24 @@ class ChessBoard {
     void print();
 
     /**
-     * @brief Move the piece
+     * @brief Move the piece (temp func does not check movement rules)
      * @param from The position of the piece to be moved
      * @param to The position piece will be moved to
      * @return True if valid move
      */
     bool move(Position from, Position to);
 
+    /**
+     * @brief Select the piece
+     * @param selection Piece to be selected
+     * @return True if there exist a piece at given position
+     */
     bool select(InputPosition selection);
 
+    /**
+     * @brief Unselect the piece
+     * @param selection Piece to be unselected
+     * @return True if given piece was selected before
+     */
     bool unselect(InputPosition selection);
-
 };

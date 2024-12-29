@@ -124,13 +124,69 @@ int main(int argc, char* argv[]) {
 
   myBoard.select(input_position);
 
-  validator.setMoveableIntoPositions(input_position);
+  validator.setPositions(input_position);
 
   myBoard.print();
 
   myBoard.unselect(input_position);
 
-  validator.clearMoveableIntoPositions();
+  validator.clearPositions();
+
+  myBoard.print();
+
+  InputPosition input_position1{'c',7};
+
+  myBoard.select(input_position1);
+
+  validator.setPositions(input_position1);
+
+  myBoard.print();
+
+  myBoard.unselect(input_position1);
+
+  validator.clearPositions();
+
+  myBoard.print();
+
+  Position from2{2,6};
+  Position to2{2,2};
+
+  myBoard.move(from2,to2);
+
+  myBoard.print();
+
+  InputPosition input_position2{'c',3};
+
+  myBoard.select(input_position2);
+
+  validator.setPositions(input_position2);
+
+  myBoard.print();
+
+  myBoard.unselect(input_position2);
+
+  validator.clearPositions();
+
+  myBoard.print();
+
+  Position from3{6,7};
+  Position to3{5,4};
+
+  myBoard.move(from3,to3);
+
+  myBoard.print();
+
+  InputPosition input_position3{'f',5};
+
+  myBoard.select(input_position3);
+
+  validator.setPositions(input_position3);
+
+  myBoard.print();
+
+  myBoard.unselect(input_position3);
+
+  validator.clearPositions();
 
   myBoard.print();
 
