@@ -53,10 +53,16 @@ class MoveValidator {
      * @brief Validate moveable and capturable positions and fill the respective vectors
      * @param input Position of the piece whose moves will be validated
      */
-    void setPositions(InputPosition& input);
+    void setPositions(Position& input);
 
     /**
      * @brief Clear moveable into and capturable positions vectors
      */
     void clearPositions();
+
+    /**
+     * @brief Check if vectors in MoveValidator are empty
+     * @return True if they both are
+     */
+    bool isVectorsEmpty();
 };

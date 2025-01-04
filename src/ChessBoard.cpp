@@ -53,7 +53,7 @@ bool ChessBoard::populateBoard(std::vector<PieceConfig> piece_configs) {
   return true;
 }
 
-void ChessBoard::print() {
+void ChessBoard::print(bool whos_turn) {
   const auto& tiles = getChessTiles();
   std::cout << "      ";
   for (int ascii = 65; ascii < getSqrtOfBoardSize()+65; ascii++ ) {
@@ -142,6 +142,8 @@ void ChessBoard::print() {
     std::cout << std::endl;
   }
   std::cout << std::endl;
+  if (whos_turn) std::cout << Color::WHITE_BG << "\033[30m WHITES TURN " << Color::RESET;
+  else std::cout << Color::BLACK_BG <<" BLACKS TURN " << Color::RESET;
 }
 
 bool ChessBoard::move(Position from, Position to) {

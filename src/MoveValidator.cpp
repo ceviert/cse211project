@@ -24,137 +24,135 @@ const Position l_shape_directions[8] = {
 
 MoveValidator::MoveValidator(ChessBoard& board) : board_(board) {}
 
-void MoveValidator::setPositions(InputPosition& input) {
-
-  Position selection = convertToPosition(input);
+void MoveValidator::setPositions(Position& input) {
 
   moveable_into_positions_.clear();
 
   const auto& tiles = board_.getChessTiles();
-  const auto& tile = tiles[selection.y][selection.x];
+  const auto& tile = tiles[input.y][input.x];
   const auto& rules = tile.movement;
-  const Position original = selection;
+  const Position original = input;
   int i;
   if (rules.first_move_forward) { // PAWN
     if (tile.white) {
       i = rules.first_move_forward;
       do {
-        selection = sumPositions(selection, directions[3]);
-        if (check(selection)) moveable_into_positions_.push_back(selection);
+        input = sumPositions(input, directions[3]);
+        if (check(input)) moveable_into_positions_.push_back(input);
         i--;
       } while (original.y == 1 && i);
-      selection = original;
-      Position lowerleft_of_selection = sumPositions(selection, directions[6]);
-      if (tiles[lowerleft_of_selection.y][lowerleft_of_selection.x].white != tile.white) capturable_positions_.push_back(lowerleft_of_selection);
-      Position lowerright_of_selection = sumPositions(selection, directions[7]);
-      if (tiles[lowerright_of_selection.y][lowerright_of_selection.x].white != tile.white) capturable_positions_.push_back(lowerright_of_selection);
+      input = original;
+      Position lowerleft_of_input = sumPositions(input, directions[6]);
+      if (tiles[lowerleft_of_input.y][lowerleft_of_input.x].white != tile.white) capturable_positions_.push_back(lowerleft_of_input);
+      Position lowerright_of_input = sumPositions(input, directions[7]);
+      if (tiles[lowerright_of_input.y][lowerright_of_input.x].white != tile.white) capturable_positions_.push_back(lowerright_of_input);
     }
     else {
       i = rules.first_move_forward;
       do {
-        selection = sumPositions(selection, directions[2]);
-        if (check(selection)) moveable_into_positions_.push_back(selection);
+        input = sumPositions(input, directions[2]);
+        if (check(input)) moveable_into_positions_.push_back(input);
         i--;
       } while (original.y == 6 && i);
-      selection = original;
-      Position upperleft_of_selection = sumPositions(selection, directions[5]);
-      if (tiles[upperleft_of_selection.y][upperleft_of_selection.x].white != tile.white) capturable_positions_.push_back(upperleft_of_selection);
-      Position upperright_of_selection = sumPositions(selection, directions[4]);
-      if (tiles[upperright_of_selection.y][upperright_of_selection.x].white != tile.white) capturable_positions_.push_back(upperright_of_selection);
+      input = original;
+      Position upperleft_of_input = sumPositions(input, directions[5]);
+      if (tiles[upperleft_of_input.y][upperleft_of_input.x].white != tile.white) capturable_positions_.push_back(upperleft_of_input);
+      Position upperright_of_input = sumPositions(input, directions[4]);
+      if (tiles[upperright_of_input.y][upperright_of_input.x].white != tile.white) capturable_positions_.push_back(upperright_of_input);
     }
   }
   else {
     if (rules.forward) { // CHECK VERTICAL
       const Position& up = directions[2]; // UP
-      selection = sumPositions(selection, up);
+      input = sumPositions(input, up);
       i = rules.forward;
-      while (check(selection) && i) {
-        moveable_into_positions_.push_back(selection);
-        selection = sumPositions(selection, up);
+      while (check(input) && i) {
+        moveable_into_positions_.push_back(input);
+        input = sumPositions(input, up);
         i--;
       }
-      if (tiles[selection.y][selection.x].white != tile.white) capturable_positions_.push_back(selection);
-      selection = original;
+      if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+      input = original;
       const Position& down = directions[3]; // DOWN
-      selection = sumPositions(selection, down);
+      input = sumPositions(input, down);
       i = rules.forward;
-      while (check(selection) && i) {
-        moveable_into_positions_.push_back(selection);
-        selection = sumPositions(selection, down);
+      while (check(input) && i) {
+        moveable_into_positions_.push_back(input);
+        input = sumPositions(input, down);
         i--;
       }
-      if (tiles[selection.y][selection.x].white != tile.white) capturable_positions_.push_back(selection);
-      selection = original;
+      if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+      input = original;
     }
     if (rules.sideways) { // CHECK HORIZONTAL
       const Position& right = directions[0]; // RIGHT
-      selection = sumPositions(selection, right);
+      input = sumPositions(input, right);
       i = rules.sideways;
-      while (check(selection) && i) {
-        moveable_into_positions_.push_back(selection);
-        selection = sumPositions(selection, right);
+      while (check(input) && i) {
+        moveable_into_positions_.push_back(input);
+        input = sumPositions(input, right);
         i--;
       }
-      if (tiles[selection.y][selection.x].white != tile.white) capturable_positions_.push_back(selection);
-      selection = original;
+      if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+      input = original;
       const Position& left = directions[1]; // LEFT
-      selection = sumPositions(selection, left);
+      input = sumPositions(input, left);
       i = rules.sideways;
-      while (check(selection) && i) {
-        moveable_into_positions_.push_back(selection);
-        selection = sumPositions(selection, left);
+      while (check(input) && i) {
+        moveable_into_positions_.push_back(input);
+        input = sumPositions(input, left);
         i--;
       }
-      if (tiles[selection.y][selection.x].white != tile.white) capturable_positions_.push_back(selection);
-      selection = original;
+      if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+      input = original;
     }
     if (rules.diagonal) {
       const Position& upperright = directions[4]; // UPPER RIGHT
-      selection = sumPositions(selection, upperright);
+      input = sumPositions(input, upperright);
       i = rules.diagonal;
-      while (check(selection) && i) {
-        moveable_into_positions_.push_back(selection);
-        selection = sumPositions(selection, upperright);
+      while (check(input) && i) {
+        moveable_into_positions_.push_back(input);
+        input = sumPositions(input, upperright);
         i--;
       }
-      if (tiles[selection.y][selection.x].white != tile.white) capturable_positions_.push_back(selection);
-      selection = original;
+      if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+      input = original;
       const Position& upperleft = directions[5]; // UPPER LEFT
-      selection = sumPositions(selection, upperleft);
+      input = sumPositions(input, upperleft);
       i = rules.diagonal;
-      while (check(selection) && i) {
-        moveable_into_positions_.push_back(selection);
-        selection = sumPositions(selection, upperleft);
+      while (check(input) && i) {
+        moveable_into_positions_.push_back(input);
+        input = sumPositions(input, upperleft);
         i--;
       }
-      if (tiles[selection.y][selection.x].white != tile.white) capturable_positions_.push_back(selection);
+      if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
       const Position& lowerleft = directions[6]; // LOWER LEFT
-      selection = sumPositions(selection, lowerleft);
+      input = sumPositions(input, lowerleft);
       i = rules.diagonal;
-      while (check(selection) && i) {
-        moveable_into_positions_.push_back(selection);
-        selection = sumPositions(selection, lowerleft);
+      while (check(input) && i) {
+        moveable_into_positions_.push_back(input);
+        input = sumPositions(input, lowerleft);
         i--;
       }
-      if (tiles[selection.y][selection.x].white != tile.white) capturable_positions_.push_back(selection);
-      selection = original;
+      if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+      input = original;
       const Position& lowerright = directions[7]; // LOWER RIGHT
-      selection = sumPositions(selection, lowerright);
+      input = sumPositions(input, lowerright);
       i = rules.diagonal;
-      while (check(selection) && i) {
-        moveable_into_positions_.push_back(selection);
-        selection = sumPositions(selection, lowerright);
+      while (check(input) && i) {
+        moveable_into_positions_.push_back(input);
+        input = sumPositions(input, lowerright);
         i--;
       }
     }
     if (rules.l_shape) {
       for (const auto& direction : l_shape_directions) {
-        selection = sumPositions(selection, direction);
-        if (check(selection)) {
-          moveable_into_positions_.push_back(selection);
+        input = sumPositions(input, direction);
+        if (check(input)) {
+          moveable_into_positions_.push_back(input);
         }
-        else if (tiles[selection.y][selection.x].white != tile.white) capturable_positions_.push_back(selection);
-        selection = original;
+        else if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+        input = original;
       }
     }
   }
@@ -195,4 +193,9 @@ void MoveValidator::clearPositions() {
   moveable_into_positions_.clear();
   capturable_positions_.clear();
   transferToBoard();
+}
+
+bool MoveValidator::isVectorsEmpty() {
+  if (moveable_into_positions_.empty() && capturable_positions_.empty()) return true;
+  else return false;
 }

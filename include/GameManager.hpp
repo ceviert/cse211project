@@ -4,13 +4,17 @@
 #include "ChessBoard.hpp"
 #include "MoveValidator.hpp"
 #include <iostream>
+#include <typeinfo>
+#include <algorithm>
 
 class GameManager {
   private:
-
-    const int console_width_{60};
+  
+    const int console_width_{40};
     bool terminate_{false};
     bool whites_turn_{true};
+    Position input_;
+    Position target_;
 
     ConfigReader& reader_;
 
@@ -22,6 +26,8 @@ class GameManager {
     void printCurrentConfig();
     void printCentered(const std::string& text, int width);
     void printAbout();
+    bool parseInput(std::string& input);
+    bool parseTarget(std::string& target);
 
     void waitForInput();
 

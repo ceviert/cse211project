@@ -92,10 +92,10 @@ void GameManager::printCurrentConfig() {
 }
 
 void GameManager::printAbout() {
-  printCentered("Made by ERTUGRUL CEVIK (gitHub:@ceviert) as a term project for;", console_width_);
-  std::cout << "\nCourse Name: CSE 211 - Data Structures (2024FALL)" << std::endl;
-  std::cout << "Instructor: Prof. Dr. Mert OZKAYA" << std::endl;
-  std::cout << "Assistant: Batuhan EDGUER" << std::endl;
+  std::cout << "Made by ERTUGRUL CEVIK (gitHub:@ceviert) as a term project for;\n" << std::endl;
+  printCentered("Course Name: CSE 211 - Data Structures (2024FALL)", console_width_);
+  printCentered("Instructor: Prof. Dr. Mert OZKAYA", console_width_);
+  printCentered("Assistant: Batuhan EDGUER", console_width_);
 
   waitForInput();
 }
@@ -108,9 +108,9 @@ void GameManager::waitForInput() {
 void GameManager::startMenu() {
   printCentered("WELCOME TO CHESS", console_width_);
   std::cout << "\n" << std::endl;
-  printMenu();
   int choice;
-  while (!terminate) {
+  while (!terminate_) {
+    printMenu();
     std::cin >> choice;
 
     if (std::cin.fail()) {
@@ -132,7 +132,7 @@ void GameManager::startMenu() {
         printAbout();
         break;
       case 4:
-        printCentered("EXITING THE GAME...", console_width_);
+        std::cout << "EXITING THE GAME..." << std::endl;
         terminate_ = true;
         break;
       default:
@@ -141,15 +141,81 @@ void GameManager::startMenu() {
   }
 }
 
+bool GameManager::parseInput(std::string& input) {
+  if (input.length() != 2) return false;
+  else if (typeid(input.at(0)) != typeid(char) || typeid(input.at(1)) != typeid(int)) return false;
+
+  InputPosition position{input.at(0), input.at(1)};
+
+  input_ = convertToPosition(position);
+  return;
+}
+
+bool GameManager::parseTarget(std::string& target) {
+  if (target.length() != 2) return false;
+  else if (typeid(target.at(0)) != typeid(char) || typeid(target.at(1)) != typeid(int)) return false;
+
+  InputPosition position{target.at(0), target.at(1)};
+
+  target_ = convertToPosition(position);
+  return;
+}
+
 void GameManager::startGame() {
   ChessBoard board(reader_.getGameSettings().board_size);
   MoveValidator validator(board);
   board.populateBoard(reader_.getPieceConfigs());
+  auto& tiles = board.getChessTiles();
 
   /**
-   * initial print
    * loop
+   * * print
    * * get selection
-   * * 
+   * * select piece
+   * * if (no piece || wrong color) continue
+   * * set positions
+   * * if (positions.empty) continue
+   * * print with moveable and capturable positions
+   * * get target tile
+   * * if (tile not valid) continue
+   * * make the move
+   * * if (move == capturing) clear respective tile
+   * * flip whites_turn_
+   * * decrement (?) turn limit
    */
+
+  std::string input;
+  std::string target;
+  while (true) {
+    board.print(whites_turn_);
+
+    std::cout << ">";
+    std::cin >> input;
+
+    if (input == "exit" || input == "EXIT" || input == "Exit") {
+      std::cout << "Returning to main menu..." << std::endl;
+      break;
+    }
+
+    if (!parseInput(input) ||
+          !tiles[input_.y][input_.y].tile_type.is_occupied || 
+          tiles[input_.y][input_.x].white != whites_turn_ ) {
+      std::cout << "Invalid input, please try again" << std::endl;
+      continue;
+    }
+
+    validator.setPositions(input_);
+
+    if (validator.isVectorsEmpty()) {
+      std::cout << "No moves for this piece, select another" << std::endl;
+      continue;
+    }
+
+    board.print(whites_turn_);
+    std::cout << "[target]>";
+    std::cin >> target;
+
+    if (!parseTarget(target) ||
+          !std::find(validator.moveable_into_positions_.begin(), validator.moveable_into_positions_.end(), target_))
+  }
 }

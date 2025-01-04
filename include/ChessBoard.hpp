@@ -133,7 +133,7 @@ class ChessBoard {
     /**
      * @brief Prints the chess board
      */
-    void print();
+    void print(bool whos_turn);
 
     /**
      * @brief Move the piece (temp func does not check movement rules)
