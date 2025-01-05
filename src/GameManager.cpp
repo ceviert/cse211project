@@ -215,7 +215,8 @@ void GameManager::startGame() {
     std::cout << "[target]>";
     std::cin >> target;
 
-    if (!parseTarget(target) ||
-          !std::find(validator.moveable_into_positions_.begin(), validator.moveable_into_positions_.end(), target_))
+    if (!parseTarget(target)) {
+      
+    }
   }
 }
