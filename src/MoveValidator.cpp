@@ -26,6 +26,8 @@ MoveValidator::MoveValidator(ChessBoard& board) : board_(board) {}
 
 void MoveValidator::setPositions(Position& input) {
 
+  std::cout << "[DEBUG] Entering setPositions with input: (" << input.x << ", " << input.y << ")" << std::endl;
+
   moveable_into_positions_.clear();
 
   const auto& tiles = board_.getChessTiles();
@@ -33,40 +35,47 @@ void MoveValidator::setPositions(Position& input) {
   const auto& rules = tile.movement;
   const Position original = input;
   int i;
+
+  std::cout << "[DEBUG] Tile at input: occupied=" << tile.tile_type.is_occupied 
+            << " white=" << tile.white << std::endl;
+
   if (rules.first_move_forward) { // PAWN
+    std::cout << "[DEBUG] Pawn rules detected" << std::endl;
     if (tile.white) {
       i = rules.first_move_forward;
       do {
         input = sumPositions(input, directions[3]);
+        std::cout << "[DEBUG] Checking position: (" << input.x << ", " << input.y << ")" << std::endl;
         if (check(input)) moveable_into_positions_.push_back(input);
         i--;
       } while (original.y == 1 && i);
       input = original;
       Position lowerleft_of_input = sumPositions(input, directions[6]);
-      if (tiles[lowerleft_of_input.y][lowerleft_of_input.x].white != tile.white) capturable_positions_.push_back(lowerleft_of_input);
+      if (tiles[lowerleft_of_input.y][lowerleft_of_input.x].white != tile.white && tiles[lowerleft_of_input.y][lowerleft_of_input.x].tile_type.is_occupied) capturable_positions_.push_back(lowerleft_of_input);
       Position lowerright_of_input = sumPositions(input, directions[7]);
-      if (tiles[lowerright_of_input.y][lowerright_of_input.x].white != tile.white) capturable_positions_.push_back(lowerright_of_input);
-    }
-    else {
+      if (tiles[lowerright_of_input.y][lowerright_of_input.x].white != tile.white && tiles[lowerright_of_input.y][lowerright_of_input.x].tile_type.is_occupied) capturable_positions_.push_back(lowerright_of_input);
+    } else {
       i = rules.first_move_forward;
       do {
         input = sumPositions(input, directions[2]);
+        std::cout << "[DEBUG] Checking position: (" << input.x << ", " << input.y << ")" << std::endl;
         if (check(input)) moveable_into_positions_.push_back(input);
         i--;
       } while (original.y == 6 && i);
       input = original;
       Position upperleft_of_input = sumPositions(input, directions[5]);
-      if (tiles[upperleft_of_input.y][upperleft_of_input.x].white != tile.white) capturable_positions_.push_back(upperleft_of_input);
+      if (tiles[upperleft_of_input.y][upperleft_of_input.x].white != tile.white && tiles[upperleft_of_input.y][upperleft_of_input.x].tile_type.is_occupied) capturable_positions_.push_back(upperleft_of_input);
       Position upperright_of_input = sumPositions(input, directions[4]);
-      if (tiles[upperright_of_input.y][upperright_of_input.x].white != tile.white) capturable_positions_.push_back(upperright_of_input);
+      if (tiles[upperright_of_input.y][upperright_of_input.x].white != tile.white && tiles[upperright_of_input.y][upperright_of_input.x].tile_type.is_occupied) capturable_positions_.push_back(upperright_of_input);
     }
-  }
-  else {
+  } else {
     if (rules.forward) { // CHECK VERTICAL
+      std::cout << "[DEBUG] Vertical movement rules detected" << std::endl;
       const Position& up = directions[2]; // UP
       input = sumPositions(input, up);
       i = rules.forward;
       while (check(input) && i) {
+        std::cout << "[DEBUG] Valid vertical move: (" << input.x << ", " << input.y << ")" << std::endl;
         moveable_into_positions_.push_back(input);
         input = sumPositions(input, up);
         i--;
@@ -77,6 +86,7 @@ void MoveValidator::setPositions(Position& input) {
       input = sumPositions(input, down);
       i = rules.forward;
       while (check(input) && i) {
+        std::cout << "[DEBUG] Valid vertical move: (" << input.x << ", " << input.y << ")" << std::endl;
         moveable_into_positions_.push_back(input);
         input = sumPositions(input, down);
         i--;
@@ -85,10 +95,12 @@ void MoveValidator::setPositions(Position& input) {
       input = original;
     }
     if (rules.sideways) { // CHECK HORIZONTAL
+      std::cout << "[DEBUG] Horizontal movement rules detected" << std::endl;
       const Position& right = directions[0]; // RIGHT
       input = sumPositions(input, right);
       i = rules.sideways;
       while (check(input) && i) {
+        std::cout << "[DEBUG] Valid horizontal move: (" << input.x << ", " << input.y << ")" << std::endl;
         moveable_into_positions_.push_back(input);
         input = sumPositions(input, right);
         i--;
@@ -99,6 +111,7 @@ void MoveValidator::setPositions(Position& input) {
       input = sumPositions(input, left);
       i = rules.sideways;
       while (check(input) && i) {
+        std::cout << "[DEBUG] Valid horizontal move: (" << input.x << ", " << input.y << ")" << std::endl;
         moveable_into_positions_.push_back(input);
         input = sumPositions(input, left);
         i--;
@@ -107,10 +120,13 @@ void MoveValidator::setPositions(Position& input) {
       input = original;
     }
     if (rules.diagonal) {
+      std::cout << "[DEBUG] Diagonal movement rules detected" << std::endl;
+      input = original;
       const Position& upperright = directions[4]; // UPPER RIGHT
       input = sumPositions(input, upperright);
       i = rules.diagonal;
       while (check(input) && i) {
+        std::cout << "[DEBUG] Valid diagonal move: (" << input.x << ", " << input.y << ")" << std::endl;
         moveable_into_positions_.push_back(input);
         input = sumPositions(input, upperright);
         i--;
@@ -121,15 +137,18 @@ void MoveValidator::setPositions(Position& input) {
       input = sumPositions(input, upperleft);
       i = rules.diagonal;
       while (check(input) && i) {
+        std::cout << "[DEBUG] Valid diagonal move: (" << input.x << ", " << input.y << ")" << std::endl;
         moveable_into_positions_.push_back(input);
         input = sumPositions(input, upperleft);
         i--;
       }
       if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+      input = original;
       const Position& lowerleft = directions[6]; // LOWER LEFT
       input = sumPositions(input, lowerleft);
       i = rules.diagonal;
       while (check(input) && i) {
+        std::cout << "[DEBUG] Valid diagonal move: (" << input.x << ", " << input.y << ")" << std::endl;
         moveable_into_positions_.push_back(input);
         input = sumPositions(input, lowerleft);
         i--;
@@ -140,26 +159,33 @@ void MoveValidator::setPositions(Position& input) {
       input = sumPositions(input, lowerright);
       i = rules.diagonal;
       while (check(input) && i) {
+        std::cout << "[DEBUG] Valid diagonal move: (" << input.x << ", " << input.y << ")" << std::endl;
         moveable_into_positions_.push_back(input);
         input = sumPositions(input, lowerright);
         i--;
       }
     }
-    if (rules.l_shape) {
+    if (rules.l_shape) { // KNIGHT
+      std::cout << "[DEBUG] Knight movement rules detected" << std::endl;
       for (const auto& direction : l_shape_directions) {
         input = sumPositions(input, direction);
+        std::cout << "[DEBUG] Checking knight move: (" << input.x << ", " << input.y << ")" << std::endl;
         if (check(input)) {
+          std::cout << "passed" << std::endl;
           moveable_into_positions_.push_back(input);
-        }
-        else if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
+        } else if (tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
         input = original;
       }
     }
   }
+
+  std::cout << "[DEBUG] Exiting setPositions" << std::endl;
   transferToBoard();
 }
 
-bool MoveValidator::check(Position selection) {
+
+bool MoveValidator::check(Position& selection) {
+  if (!checkBounds(selection)) return false;
   const auto& tiles = board_.getChessTiles();
   const auto& tile = tiles[selection.y][selection.x];
   if (!tile.tile_type.is_occupied) return true;
@@ -210,4 +236,9 @@ MOVE_TYPE MoveValidator::validateMove(const Position& target) {
   }
 
   return INVALID;
+}
+
+bool MoveValidator::checkBounds(Position& pos) {
+  if (0 > pos.x || pos.x >= rowcol_ || 0 > pos.y || pos.y >= rowcol_) return false;
+  return true;
 }

@@ -96,10 +96,10 @@ void ChessBoard::print(bool whos_turn) {
               std::cout << Color::ORANGE_ON_WHITE_BG << "   " << Color::RESET;  
               break;
             case SELECTED: // not possible
-              std::cout << "???" << std::endl;
+              std::cout << "?a?";
               break;
             case CAPTURABLE: // not possible
-              std::cout << "???" << std::endl;
+              std::cout << "?b?";
               break;
           }
         }

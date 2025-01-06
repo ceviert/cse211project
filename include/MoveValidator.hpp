@@ -26,13 +26,16 @@ class MoveValidator {
     ChessBoard& board_;
     std::vector<Position> moveable_into_positions_;
     std::vector<Position> capturable_positions_;
+    const int rowcol_ = board_.getSqrtOfBoardSize();
     
     /**
      * @brief Check if the tile is empty
      * @param selection Position of the tile to be checked
      * @return True if empty
      */
-    bool check(Position selection);
+    bool check(Position& selection);
+
+    bool checkBounds(Position& pos);
 
     /**
      * @brief Adds 2 or 3 positions together
