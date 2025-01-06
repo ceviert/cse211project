@@ -186,103 +186,86 @@ bool GameManager::parseTarget(std::string& target) {
 }
 
 void GameManager::startGame() {
-    // Debug: Start of function
-    std::cout << "[DEBUG] Starting game..." << std::endl;
+  ChessBoard board(reader_.getGameSettings().board_size);
+  MoveValidator validator(board);
+  board.populateBoard(reader_.getPieceConfigs());
+  auto& tiles = board.getChessTiles();
+  GameSettings settings = reader_.getGameSettings();
+  turn_limit_ = settings.turn_limit;
 
-    ChessBoard board(reader_.getGameSettings().board_size);
-    MoveValidator validator(board);
-    board.populateBoard(reader_.getPieceConfigs());
-    auto& tiles = board.getChessTiles();
-    GameSettings settings = reader_.getGameSettings();
-    turn_limit_ = settings.turn_limit;
+  /**
+   * loop
+   * * print
+   * * get selection
+   * * select piece
+   * * if (no piece || wrong color) continue
+   * * set positions
+   * * if (positions.empty) continue
+   * * print with moveable and capturable positions
+   * * get target tile
+   * * if (tile not valid) continue
+   * * make the move
+   * * if (move == capturing) clear respective tile
+   * * flip whites_turn_
+   * * decrement (?) turn limit
+   */
 
-    if (turn_limit_ <= 0) {
-        std::cerr << "[ERROR] Invalid turn limit: " << turn_limit_ << std::endl;
-        return;
+  std::string input;
+  std::string target;
+  while (turn_limit_) {
+    board.print(whites_turn_);
+
+    std::cout << ">";
+    std::cin >> input;
+
+    if (input == "exit" || input == "EXIT" || input == "Exit") {
+      std::cout << "Returning to main menu..." << std::endl;
+      break;
     }
 
-    std::cout << "[DEBUG] Turn limit set to: " << turn_limit_ << std::endl;
+    if (!parseInput(input) ||
+          !tiles[input_.y][input_.x].tile_type.is_occupied || 
+          tiles[input_.y][input_.x].white != whites_turn_) {
+      std::cout << !parseInput(input) << !tiles[input_.y][input_.x].tile_type.is_occupied << tiles[input_.y][input_.x].white << whites_turn_ << std::endl;
+      std::cout << "Invalid input, please try again" << std::endl;
+      continue;
+    }
 
-    std::string input;
-    std::string target;
-    while (turn_limit_) {
-        board.print(whites_turn_);
+    validator.setPositions(input_);
 
-        std::cout << ">";
-        std::cin >> input;
+    if (validator.isVectorsEmpty()) {
+      std::cout << "No moves for this piece, select another" << std::endl;
+      continue;
+    }
 
-        if (input == "exit" || input == "EXIT" || input == "Exit") {
-            std::cout << "Returning to main menu..." << std::endl;
-            break;
-        }
+    board.print(whites_turn_);
+    std::cout << "[target]>";
+    std::cin >> target;
 
-        // Debug: Input received
-        std::cout << "[DEBUG] Input received: " << input << std::endl;
+    if (!parseTarget(target)) {
+      std::cout << "Invalid target, please try again" << std::endl;
+      continue;
+    }
 
-        if (!parseInput(input)) {
-            std::cerr << "[ERROR] Invalid input format: " << input << std::endl;
-            continue;
-        }
+    MOVE_TYPE type = validator.validateMove(target_);
 
-        // Debug: Parsed input
-        std::cout << "[DEBUG] Parsed input: x = " << input_.x << ", y = " << input_.y << std::endl;
-
-        if (input_.y < 0 || input_.y >= tiles.size() ||
-            input_.x < 0 || input_.x >= tiles[input_.y].size()) {
-            std::cerr << "[ERROR] Input out of bounds: x = " << input_.x << ", y = " << input_.y << std::endl;
-            continue;
-        }
-
-        if (!tiles[input_.y][input_.x].tile_type.is_occupied ||
-            tiles[input_.y][input_.x].white != whites_turn_) {
-            std::cerr << "[ERROR] Invalid piece selection at: x = " << input_.x << ", y = " << input_.y << std::endl;
-            continue;
-        }
-
-        validator.setPositions(input_);
-
-        if (validator.isVectorsEmpty()) {
-            std::cout << "No moves for this piece, select another" << std::endl;
-            continue;
-        }
-
-        board.print(whites_turn_);
-        std::cout << "[target]>";
-        std::cin >> target;
-
-        if (!parseTarget(target)) {
-            std::cerr << "[ERROR] Invalid target format: " << target << std::endl;
-            continue;
-        }
-
-        // Debug: Parsed target
-        std::cout << "[DEBUG] Parsed target: x = " << target_.x << ", y = " << target_.y << std::endl;
-
-        MOVE_TYPE type = validator.validateMove(target_);
-
-        switch (type) {
-            case 0: // INVALID
-                std::cerr << "[ERROR] Invalid move to target: x = " << target_.x << ", y = " << target_.y << std::endl;
-                validator.clearPositions();
-                continue;
-            case 1: // MOVE
-                std::cout << "[DEBUG] Moving piece to: x = " << target_.x << ", y = " << target_.y << std::endl;
-                board.move(input_, target_);
-                break;
-            case 2: // CAPTURE
-                std::cout << "[DEBUG] Capturing piece at: x = " << target_.x << ", y = " << target_.y << std::endl;
-                board.clearTile(target_);
-                board.move(input_, target_);
-                break;
-        }
+    switch (type) {
+      case 0: // INVALID
+        std::cout << "Invalid target, please try again" << std::endl;
         validator.clearPositions();
-
-        whites_turn_ = !whites_turn_;
-        std::cout << "[DEBUG] Turn flipped. Whites turn: " << whites_turn_ << std::endl;
-
-        turn_limit_--;
-        std::cout << "[DEBUG] Remaining turns: " << turn_limit_ << std::endl;
+        continue;
+      case 1: // MOVE
+        board.move(input_, target_);
+        break;
+      case 2: // CAPTURE
+        board.clearTile(target_);
+        board.move(input_, target_);
+        break;
     }
+    validator.clearPositions();
 
-    std::cout << "[DEBUG] Game loop ended." << std::endl;
+    whites_turn_ = !whites_turn_;
+
+    turn_limit_--;
+  }
 }
