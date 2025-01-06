@@ -199,3 +199,15 @@ bool MoveValidator::isVectorsEmpty() {
   if (moveable_into_positions_.empty() && capturable_positions_.empty()) return true;
   else return false;
 }
+
+MOVE_TYPE MoveValidator::validateMove(const Position& target) {
+  for (const auto& pos : moveable_into_positions_) {
+    if (target.x == pos.x && target.y == pos.y) return MOVE;
+  }
+
+  for (const auto& pos : capturable_positions_) {
+    if (target.x == pos.x && target.y == pos.y) return CAPTURE;
+  }
+
+  return INVALID;
+}

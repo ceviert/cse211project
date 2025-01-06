@@ -186,3 +186,13 @@ bool ChessBoard::unselect(InputPosition selection) {
     return false;
   }
 }
+
+void ChessBoard::clearTile(Position& pos) {
+  ChessTile& tile = tiles_[pos.y][pos.x];
+
+  tile.tile_type.is_occupied = false;
+  tile.tile_type.capturable_tile = false;
+  tile.tile_type.moveable_into_tile = false;
+  tile.tile_type.selected_tile = false;
+  tile.tile_type.normal_tile = true;
+}

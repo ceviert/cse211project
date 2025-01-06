@@ -88,6 +88,8 @@ void GameManager::printCurrentConfig() {
     printPortalConfig(portal);
   }
 
+  std::cout << "PRESS ENTER TO CONTINUE...";
+
   waitForInput();
 }
 
@@ -96,6 +98,8 @@ void GameManager::printAbout() {
   printCentered("Course Name: CSE 211 - Data Structures (2024FALL)", console_width_);
   printCentered("Instructor: Prof. Dr. Mert OZKAYA", console_width_);
   printCentered("Assistant: Batuhan EDGUER", console_width_);
+
+  std::cout << "PRESS ENTER TO CONTINUE...";
 
   waitForInput();
 }
@@ -142,13 +146,23 @@ void GameManager::startMenu() {
 }
 
 bool GameManager::parseInput(std::string& input) {
-  if (input.length() != 2) return false;
-  else if (typeid(input.at(0)) != typeid(char) || typeid(input.at(1)) != typeid(int)) return false;
+  if (input.length() != 2) {
+    std::cout << "length aint 2" << std::endl;
+    return false;
+  }
+  
+  int i = input.at(1);
+  
+  if (typeid(input.at(0)) != typeid(char) || typeid(i) != typeid(int)) {
+    std::cout << typeid(input.at(0)).name() << " " << typeid(char).name() << "\n";
+    std::cout << typeid(i).name() << " " << typeid(int).name();
+    return false;
+  }
 
-  InputPosition position{input.at(0), input.at(1)};
+  InputPosition position{input.at(0), i};
 
   input_ = convertToPosition(position);
-  return;
+  return true;
 }
 
 bool GameManager::parseTarget(std::string& target) {
@@ -158,7 +172,7 @@ bool GameManager::parseTarget(std::string& target) {
   InputPosition position{target.at(0), target.at(1)};
 
   target_ = convertToPosition(position);
-  return;
+  return true;
 }
 
 void GameManager::startGame() {
@@ -166,6 +180,8 @@ void GameManager::startGame() {
   MoveValidator validator(board);
   board.populateBoard(reader_.getPieceConfigs());
   auto& tiles = board.getChessTiles();
+  GameSettings settings = reader_.getGameSettings();
+  turn_limit_ = settings.turn_limit;
 
   /**
    * loop
@@ -186,7 +202,7 @@ void GameManager::startGame() {
 
   std::string input;
   std::string target;
-  while (true) {
+  while (turn_limit_) {
     board.print(whites_turn_);
 
     std::cout << ">";
@@ -198,8 +214,9 @@ void GameManager::startGame() {
     }
 
     if (!parseInput(input) ||
-          !tiles[input_.y][input_.y].tile_type.is_occupied || 
-          tiles[input_.y][input_.x].white != whites_turn_ ) {
+          tiles[input_.y][input_.y].tile_type.is_occupied || 
+          tiles[input_.y][input_.x].white != whites_turn_) {
+      std::cout << !parseInput(input) << !tiles[input_.y][input_.y].tile_type.is_occupied << tiles[input_.y][input_.x].white << whites_turn_ << std::endl;
       std::cout << "Invalid input, please try again" << std::endl;
       continue;
     }
@@ -216,7 +233,27 @@ void GameManager::startGame() {
     std::cin >> target;
 
     if (!parseTarget(target)) {
-      
+      std::cout << "Invalid target, please try again" << std::endl;
+      continue;
     }
+
+    MOVE_TYPE type = validator.validateMove(target_);
+
+    switch (type) {
+      case 0: // INVALID
+        std::cout << "Invalid target, please try again" << std::endl;
+        continue;
+      case 1: // MOVE
+        board.move(input_, target_);
+        break;
+      case 2: // CAPTURE
+        board.clearTile(target_);
+        board.move(input_, target_);
+        break;
+    }
+
+    whites_turn_ = !whites_turn_;
+
+    turn_limit_--;
   }
 }

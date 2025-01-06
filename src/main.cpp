@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  // Print game settings
+  /*// Print game settings
   auto settings = reader.getGameSettings();
   std::cout << "\n=== Game Settings ===\n";
   std::cout << "Name: " << settings.name << "\n";
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
   std::cout << "\n=== Portal Configurations ===\n";
   for (const auto& portal : reader.getPortalConfigs()) {
     printPortalConfig(portal);
-  }
+  }*/
 
   // ben yazdım altını
 

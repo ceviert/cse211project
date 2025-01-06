@@ -156,4 +156,6 @@ class ChessBoard {
      * @return True if given piece was selected before
      */
     bool unselect(InputPosition selection);
+
+    void clearTile(Position& pos);
 };

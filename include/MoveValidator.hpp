@@ -12,6 +12,12 @@ extern const Position directions[8];
  */
 extern const Position l_shape_directions[8];
 
+enum MOVE_TYPE {
+  INVALID,
+  MOVE,
+  CAPTURE
+};
+
 /**
  * @brief Class responsible for move validation
  */
@@ -65,4 +71,6 @@ class MoveValidator {
      * @return True if they both are
      */
     bool isVectorsEmpty();
+
+    MOVE_TYPE validateMove(const Position& target);
 };
