@@ -164,8 +164,7 @@ Position convertToPosition(InputPosition input) {
   return pos;
 }
 
-bool ChessBoard::select(InputPosition selection) {
-  Position pos = convertToPosition(selection);
+bool ChessBoard::select(Position& pos) {
   if (tiles_[pos.y][pos.x].tile_type.is_occupied) { // A PIECE IS SELECTED
     tiles_[pos.y][pos.x].tile_type.selected_tile = true;
     
@@ -176,15 +175,12 @@ bool ChessBoard::select(InputPosition selection) {
   }
 }
 
-bool ChessBoard::unselect(InputPosition selection) {
-  Position pos = convertToPosition(selection);
+bool ChessBoard::unselect(Position& pos) {
   if (tiles_[pos.y][pos.x].tile_type.selected_tile) { // PIECE TO UNSELECT IS A PIECE THAT HAS SELECTED BEFORE
     tiles_[pos.y][pos.x].tile_type.selected_tile = false;
     return true;
   }
-  else {
     return false;
-  }
 }
 
 void ChessBoard::clearTile(Position& pos) {

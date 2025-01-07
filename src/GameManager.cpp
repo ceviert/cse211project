@@ -238,6 +238,8 @@ void GameManager::startGame() {
       continue;
     }
 
+    board.select(input_);
+
     board.print(whites_turn_);
     std::cout << "[target]>";
     std::cin >> target;
@@ -263,6 +265,9 @@ void GameManager::startGame() {
         break;
     }
     validator.clearPositions();
+
+    board.unselect(input_);
+    board.unselect(target_);
 
     whites_turn_ = !whites_turn_;
 

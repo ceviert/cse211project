@@ -148,14 +148,14 @@ class ChessBoard {
      * @param selection Piece to be selected
      * @return True if there exist a piece at given position
      */
-    bool select(InputPosition selection);
+    bool select(Position& pos);
 
     /**
      * @brief Unselect the piece
      * @param selection Piece to be unselected
      * @return True if given piece was selected before
      */
-    bool unselect(InputPosition selection);
+    bool unselect(Position& pos);
 
     void clearTile(Position& pos);
 };
