@@ -54,6 +54,7 @@ bool ChessBoard::populateBoard(std::vector<PieceConfig> piece_configs) {
 }
 
 void ChessBoard::print(bool whos_turn) {
+  bool check{false};
   const auto& tiles = getChessTiles();
   std::cout << "      ";
   for (int ascii = 65; ascii < getSqrtOfBoardSize()+65; ascii++ ) {
@@ -98,8 +99,8 @@ void ChessBoard::print(bool whos_turn) {
             case SELECTED: // not possible
               std::cout << "?a?";
               break;
-            case CAPTURABLE: // not possible
-              std::cout << "?b?";
+            case CAPTURABLE: // not possible (spoiler alert, it IS for en-passant)
+              std::cout << Color::RED_BG << "   " << Color::RESET;
               break;
           }
         }
@@ -130,10 +131,10 @@ void ChessBoard::print(bool whos_turn) {
               std::cout << Color::ORANGE_ON_BLACK_BG << "   " << Color::RESET;  
               break;
             case SELECTED: // not possible
-              std::cout << "???" << std::endl;
+              std::cout << "?c?" << std::endl;
               break;
-            case CAPTURABLE: // not possible
-              std::cout << "???" << std::endl;
+            case CAPTURABLE: // not possible (spoiler alert, it IS for en-passant)
+              std::cout << Color::RED_BG << "   " << Color::RESET;
               break;
           }
         }
@@ -142,18 +143,28 @@ void ChessBoard::print(bool whos_turn) {
     std::cout << std::endl;
   }
   std::cout << std::endl;
+  if (check) std::cout << "!!!!!! CHECK !!!!!!" << std::endl;
   if (whos_turn) std::cout << Color::WHITE_BG << "\033[30m WHITES TURN " << Color::RESET;
   else std::cout << Color::BLACK_BG <<" BLACKS TURN " << Color::RESET;
 }
 
-bool ChessBoard::move(Position from, Position to) {
-  ChessTile tile = tiles_[from.y][from.x];
-  if (!tile.tile_type.is_occupied) { // TILE IS EMPTY
-    return false;
+void ChessBoard::move(Position& from, Position& to) {
+  ChessTile& tile_from = tiles_[from.y][from.x];
+  ChessTile& tile_to = tiles_[to.y][to.x];
+
+  if (tile_to.tile_type.en_passantable_tile && from.x != to.x) {
+    clearTile(to);
+    tile_to = tile_from;
+    clearTile(from);
+    Position ep_pawn = {from.x - (from.x - to.x), from.y};
+    std::cout << "EP PAWN: (" << ep_pawn.x << ", " << ep_pawn.y << ")" << std::endl;
+    clearTile(ep_pawn);
+    return;
   }
-  tiles_[from.y][from.x].tile_type.is_occupied = false;
-  tiles_[to.y][to.x] = tile;
-  return true;
+
+  clearTile(to);
+  tile_to = tile_from;
+  clearTile(from);
 }
 
 Position convertToPosition(InputPosition input) {
@@ -191,4 +202,5 @@ void ChessBoard::clearTile(Position& pos) {
   tile.tile_type.moveable_into_tile = false;
   tile.tile_type.selected_tile = false;
   tile.tile_type.normal_tile = true;
+  tile.tile_type.en_passantable_tile = false;
 }

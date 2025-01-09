@@ -14,6 +14,7 @@ struct TileType {
   bool moveable_into_tile{false};
   bool selected_tile{false};
   bool capturable_tile{false};
+  bool en_passantable_tile{false}; // ??
 };
 
 /**
@@ -139,9 +140,8 @@ class ChessBoard {
      * @brief Move the piece (temp func does not check movement rules)
      * @param from The position of the piece to be moved
      * @param to The position piece will be moved to
-     * @return True if valid move
      */
-    bool move(Position from, Position to);
+    void move(Position& from, Position& to);
 
     /**
      * @brief Select the piece
@@ -157,5 +157,9 @@ class ChessBoard {
      */
     bool unselect(Position& pos);
 
+    /**
+     * @brief Reset the tile
+     * @param pos Tile position to be resetted
+     */
     void clearTile(Position& pos);
 };

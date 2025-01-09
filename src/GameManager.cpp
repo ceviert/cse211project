@@ -246,6 +246,8 @@ void GameManager::startGame() {
 
     if (!parseTarget(target)) {
       std::cout << "Invalid target, please try again" << std::endl;
+      validator.clearPositions();
+      board.unselect(input_);
       continue;
     }
 
@@ -254,13 +256,13 @@ void GameManager::startGame() {
     switch (type) {
       case 0: // INVALID
         std::cout << "Invalid target, please try again" << std::endl;
+        board.unselect(input_);
         validator.clearPositions();
         continue;
       case 1: // MOVE
         board.move(input_, target_);
         break;
       case 2: // CAPTURE
-        board.clearTile(target_);
         board.move(input_, target_);
         break;
     }

@@ -75,5 +75,10 @@ class MoveValidator {
      */
     bool isVectorsEmpty();
 
+    /**
+     * @brief Enumarate move type
+     * @param target Target tile of move
+     * @return Move type MOVE_TYPE
+     */
     MOVE_TYPE validateMove(const Position& target);
 };
