@@ -226,7 +226,6 @@ void GameManager::startGame() {
     if (!parseInput(input) ||
           !tiles[input_.y][input_.x].tile_type.is_occupied || 
           tiles[input_.y][input_.x].white != whites_turn_) {
-      std::cout << !parseInput(input) << !tiles[input_.y][input_.x].tile_type.is_occupied << tiles[input_.y][input_.x].white << whites_turn_ << std::endl;
       std::cout << "Invalid input, please try again" << std::endl;
       continue;
     }
