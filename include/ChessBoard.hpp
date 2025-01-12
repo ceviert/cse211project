@@ -10,11 +10,12 @@
  */
 struct TileType {
   bool is_occupied{false};
-  bool normal_tile{false};
+  bool normal_tile{true};
   bool moveable_into_tile{false};
   bool selected_tile{false};
   bool capturable_tile{false};
   bool en_passantable_tile{false}; // ??
+  bool check{false};
 };
 
 /**
@@ -22,16 +23,17 @@ struct TileType {
  */
 struct ChessTile {
   TileType tile_type;
-  std::string piece_type;
-  Position position;
-  MovementRules movement;
-  bool white;
+  std::string piece_type{"seks"};
+  Position position{};
+  MovementRules movement{};
+  bool white{false};
 
   /**
    * @brief Get the single char representation of chess pieces
    * @return Character of chess piece type representation
    */
-  char getPieceRepresentation() {
+  char getPieceRepresentation() const {
+    if (piece_type.empty()) return '?';
     if (white) {
       if (piece_type == "pawn") return 'P';
       else if (piece_type == "rook") return 'R';
@@ -39,7 +41,7 @@ struct ChessTile {
       else if (piece_type == "bishop") return 'B';
       else if (piece_type == "queen") return 'Q';
       else if (piece_type == "king") return 'K';
-      else return '?';
+      else return 'X';
     }
     else {
       if (piece_type == "pawn") return 'p';
@@ -48,8 +50,29 @@ struct ChessTile {
       else if (piece_type == "bishop") return 'b';
       else if (piece_type == "queen") return 'q';
       else if (piece_type == "king") return 'k';
-      else return '?';
+      else return 'X';
     }
+  }
+  ChessTile() :
+        piece_type("uninitialized"),
+        position(),
+        movement(),
+        white(false) {} 
+  ChessTile(const ChessTile& other) : 
+        tile_type(other.tile_type),
+        piece_type(other.piece_type),
+        position(other.position),
+        movement(other.movement),
+        white(other.white) {}
+  ChessTile& operator=(const ChessTile& other) {
+    if (this != &other) {
+        tile_type = other.tile_type;
+        piece_type = other.piece_type;
+        position = other.position;
+        movement = other.movement;
+        white = other.white;
+    }
+    return *this;
   }
 };
 
@@ -68,7 +91,8 @@ enum TILE_PROPERTIES {
   NORMAL,
   MOVEABLE_INTO,
   SELECTED,
-  CAPTURABLE
+  CAPTURABLE,
+  CHECK
 };
 
 /**
@@ -83,7 +107,7 @@ Position convertToPosition(InputPosition input);
  * @param tile The tile which the properties will be extracted
  * @return Property in TILE_PROPERTIES enumarated type
  */
-TILE_PROPERTIES getTileProperty(ChessTile tile);
+TILE_PROPERTIES getTileProperty(const ChessTile tile);
 
 /**
  * @brief Class responsible for initializing, populating and updating the chess board
@@ -129,37 +153,37 @@ class ChessBoard {
      * @param piece_configs Vector of PieceConfig structures
      * @return True if successful
      */
-    bool populateBoard(std::vector<PieceConfig> piece_configs);
+    bool populateBoard(const std::vector<PieceConfig> piece_configs);
 
     /**
      * @brief Prints the chess board
      */
-    void print(bool whos_turn);
+    void print(const bool whos_turn);
 
     /**
-     * @brief Move the piece (temp func does not check movement rules)
+     * @brief Move the piece (does not validate)
      * @param from The position of the piece to be moved
      * @param to The position piece will be moved to
      */
-    void move(Position& from, Position& to);
+    void move(const Position& from, const Position& to);
 
     /**
      * @brief Select the piece
      * @param selection Piece to be selected
      * @return True if there exist a piece at given position
      */
-    bool select(Position& pos);
+    bool select(const Position& pos);
 
     /**
      * @brief Unselect the piece
      * @param selection Piece to be unselected
      * @return True if given piece was selected before
      */
-    bool unselect(Position& pos);
+    bool unselect(const Position& pos);
 
     /**
      * @brief Reset the tile
      * @param pos Tile position to be resetted
      */
-    void clearTile(Position& pos);
+    void clearTile(const Position& pos);
 };

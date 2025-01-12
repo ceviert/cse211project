@@ -4,10 +4,8 @@ ChessBoard::ChessBoard(const int& board_size)
     : board_size_(board_size), sqrt_of_board_size_(sqrt(board_size)) {}
 
 void ChessBoard::buildBoard(std::vector<PieceConfig> piece_configs) {
-  tiles_.resize(sqrt_of_board_size_);
-  for (auto& row : tiles_) {
-    row.resize(sqrt_of_board_size_);
-  }
+  std::cout << "Board size: " << sqrt_of_board_size_ << "x" << sqrt_of_board_size_ << "\n";
+  tiles_.resize(sqrt_of_board_size_, std::vector<ChessTile>(sqrt_of_board_size_));
 
   for (const auto& piece : piece_configs) {
     for (const auto& pos : piece.black_positions) {
@@ -42,19 +40,19 @@ int ChessBoard::getSqrtOfBoardSize() const {
 TILE_PROPERTIES getTileProperty(ChessTile tile) {
   const auto& type = tile.tile_type;
   if (type.capturable_tile) return CAPTURABLE;
+  else if (type.check) return CHECK;
   else if (type.moveable_into_tile) return MOVEABLE_INTO;
   else if (type.normal_tile) return NORMAL;
   else if (type.selected_tile) return SELECTED;
   else return NORMAL;
 }
 
-bool ChessBoard::populateBoard(std::vector<PieceConfig> piece_configs) {
+bool ChessBoard::populateBoard(const std::vector<PieceConfig> piece_configs) {
   buildBoard(piece_configs);
   return true;
 }
 
-void ChessBoard::print(bool whos_turn) {
-  bool check{false};
+void ChessBoard::print(const bool whos_turn) {
   const auto& tiles = getChessTiles();
   std::cout << "      ";
   for (int ascii = 65; ascii < getSqrtOfBoardSize()+65; ascii++ ) {
@@ -85,6 +83,9 @@ void ChessBoard::print(bool whos_turn) {
               break;
             case CAPTURABLE:
               std::cout << Color::RED_BG << " " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
+            case CHECK:
+              std::cout << Color::CHECK_RED << " " << tile.getPieceRepresentation() << " " << Color::RESET;
               break;
           }
         }
@@ -120,6 +121,9 @@ void ChessBoard::print(bool whos_turn) {
             case CAPTURABLE:
               std::cout << Color::RED_BG << " " << tile.getPieceRepresentation() << " " << Color::RESET;
               break;
+            case CHECK:
+              std::cout << Color::CHECK_RED << " " << tile.getPieceRepresentation() << " " << Color::RESET;
+              break;
           }
         }
         else {
@@ -143,12 +147,12 @@ void ChessBoard::print(bool whos_turn) {
     std::cout << std::endl;
   }
   std::cout << std::endl;
-  if (check) std::cout << "!!!!!! CHECK !!!!!!" << std::endl;
   if (whos_turn) std::cout << Color::WHITE_BG << "\033[30m WHITES TURN " << Color::RESET;
   else std::cout << Color::BLACK_BG <<" BLACKS TURN " << Color::RESET;
 }
 
-void ChessBoard::move(Position& from, Position& to) {
+
+void ChessBoard::move(const Position& from, const Position& to) {
   ChessTile& tile_from = tiles_[from.y][from.x];
   ChessTile& tile_to = tiles_[to.y][to.x];
 
@@ -175,10 +179,10 @@ Position convertToPosition(InputPosition input) {
   return pos;
 }
 
-bool ChessBoard::select(Position& pos) {
+bool ChessBoard::select(const Position& pos) {
   if (tiles_[pos.y][pos.x].tile_type.is_occupied) { // A PIECE IS SELECTED
     tiles_[pos.y][pos.x].tile_type.selected_tile = true;
-    
+    tiles_[pos.y][pos.x].tile_type.normal_tile = false;
     return true;
   }
   else {
@@ -186,15 +190,16 @@ bool ChessBoard::select(Position& pos) {
   }
 }
 
-bool ChessBoard::unselect(Position& pos) {
+bool ChessBoard::unselect(const Position& pos) {
   if (tiles_[pos.y][pos.x].tile_type.selected_tile) { // PIECE TO UNSELECT IS A PIECE THAT HAS SELECTED BEFORE
     tiles_[pos.y][pos.x].tile_type.selected_tile = false;
+    tiles_[pos.y][pos.x].tile_type.normal_tile = true;
     return true;
   }
     return false;
 }
 
-void ChessBoard::clearTile(Position& pos) {
+void ChessBoard::clearTile(const Position& pos) {
   ChessTile& tile = tiles_[pos.y][pos.x];
 
   tile.tile_type.is_occupied = false;

@@ -13,9 +13,10 @@
 class GameManager {
   private:
   
-    const int console_width_{60};
+    const int console_width_{65};
     bool terminate_{false};
     bool whites_turn_{true};
+    bool check_mode_{false};
     Position input_;
     Position target_;
     int turn_limit_;

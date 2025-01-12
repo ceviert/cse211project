@@ -48,9 +48,9 @@ void MoveValidator::setPositions(Position& input) {
       }
       input = original;
       Position lowerleft_of_input = sumPositions(input, directions[6]);
-      if (tiles[lowerleft_of_input.y][lowerleft_of_input.x].white != tile.white && (tiles[lowerleft_of_input.y][lowerleft_of_input.x].tile_type.is_occupied || tiles[lowerleft_of_input.y][lowerleft_of_input.x].tile_type.en_passantable_tile)) capturable_positions_.push_back(lowerleft_of_input);
+      if (checkBounds(lowerleft_of_input) && tiles[lowerleft_of_input.y][lowerleft_of_input.x].white != tile.white && (tiles[lowerleft_of_input.y][lowerleft_of_input.x].tile_type.is_occupied || tiles[lowerleft_of_input.y][lowerleft_of_input.x].tile_type.en_passantable_tile)) capturable_positions_.push_back(lowerleft_of_input);
       Position lowerright_of_input = sumPositions(input, directions[7]);
-      if (tiles[lowerright_of_input.y][lowerright_of_input.x].white != tile.white && (tiles[lowerright_of_input.y][lowerright_of_input.x].tile_type.is_occupied || tiles[lowerright_of_input.y][lowerright_of_input.x].tile_type.en_passantable_tile)) capturable_positions_.push_back(lowerright_of_input);
+      if (checkBounds(lowerright_of_input) && tiles[lowerright_of_input.y][lowerright_of_input.x].white != tile.white && (tiles[lowerright_of_input.y][lowerright_of_input.x].tile_type.is_occupied || tiles[lowerright_of_input.y][lowerright_of_input.x].tile_type.en_passantable_tile)) capturable_positions_.push_back(lowerright_of_input);
     } else { // BLACK PAWN
       i = rules.first_move_forward;
       do {
@@ -64,9 +64,9 @@ void MoveValidator::setPositions(Position& input) {
       }
       input = original;
       Position upperleft_of_input = sumPositions(input, directions[5]);
-      if (tiles[upperleft_of_input.y][upperleft_of_input.x].white != tile.white && (tiles[upperleft_of_input.y][upperleft_of_input.x].tile_type.is_occupied || tiles[upperleft_of_input.y][upperleft_of_input.x].tile_type.en_passantable_tile)) capturable_positions_.push_back(upperleft_of_input);
+      if (checkBounds(upperleft_of_input) && tiles[upperleft_of_input.y][upperleft_of_input.x].white != tile.white && (tiles[upperleft_of_input.y][upperleft_of_input.x].tile_type.is_occupied || tiles[upperleft_of_input.y][upperleft_of_input.x].tile_type.en_passantable_tile)) capturable_positions_.push_back(upperleft_of_input);
       Position upperright_of_input = sumPositions(input, directions[4]);
-      if (tiles[upperright_of_input.y][upperright_of_input.x].white != tile.white && (tiles[upperright_of_input.y][upperright_of_input.x].tile_type.is_occupied || tiles[upperright_of_input.y][upperright_of_input.x].tile_type.en_passantable_tile)) capturable_positions_.push_back(upperright_of_input);
+      if (checkBounds(upperright_of_input) && tiles[upperright_of_input.y][upperright_of_input.x].white != tile.white && (tiles[upperright_of_input.y][upperright_of_input.x].tile_type.is_occupied || tiles[upperright_of_input.y][upperright_of_input.x].tile_type.en_passantable_tile)) capturable_positions_.push_back(upperright_of_input);
     }
   } else { // NOT PAWN
     if (rules.forward) { // CHECK VERTICAL
@@ -104,7 +104,6 @@ void MoveValidator::setPositions(Position& input) {
       input = original;
     }
     if (rules.diagonal) {
-
       const Position& upperright = directions[4];
       input = sumPositions(input, upperright);
       for (i = rules.diagonal; checkBounds(input) && check(input) && i; input = sumPositions(input, upperright), i--) {
@@ -188,9 +187,11 @@ void MoveValidator::transferToBoard() {
   }
   for (const auto& position : moveable_into_positions_) {
     tiles[position.y][position.x].tile_type.moveable_into_tile = true;
+    tiles[position.y][position.x].tile_type.normal_tile = false;
   }
   for (const auto& position : capturable_positions_) {
     tiles[position.y][position.x].tile_type.capturable_tile = true;
+    tiles[position.y][position.x].tile_type.normal_tile = false;
   }
 }
 

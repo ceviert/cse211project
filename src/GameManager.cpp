@@ -73,6 +73,7 @@ void GameManager::printMenu() {
 
 void GameManager::printCurrentConfig() {
   auto settings = reader_.getGameSettings();
+  std::cout << "=================================================================" << std::endl;
   std::cout << "\n=== Game Settings ===\n";
   std::cout << "Name: " << settings.name << "\n";
   std::cout << "Board Size: " << settings.board_size << "\n";
@@ -88,16 +89,20 @@ void GameManager::printCurrentConfig() {
     printPortalConfig(portal);
   }
 
+  std::cout << "=================================================================" << std::endl;
+
   std::cout << "PRESS ENTER TO CONTINUE...";
 
   waitForInput();
 }
 
 void GameManager::printAbout() {
+  std::cout << "=================================================================" << std::endl;
   std::cout << "Made by ERTUGRUL CEVIK (gitHub:@ceviert) as a term project for;\n" << std::endl;
   printCentered("Course Name: CSE 211 - Data Structures (2024FALL)", console_width_);
   printCentered("Instructor: Prof. Dr. Mert OZKAYA", console_width_);
   printCentered("Assistant: Batuhan EDGUER", console_width_);
+  std::cout << "=================================================================" << std::endl;
 
   std::cout << "PRESS ENTER TO CONTINUE...";
 
@@ -115,6 +120,7 @@ void GameManager::startMenu() {
   int choice;
   while (!terminate_) {
     printMenu();
+    std::cout << ">";
     std::cin >> choice;
 
     if (std::cin.fail()) {
@@ -269,6 +275,16 @@ void GameManager::startGame() {
 
     board.unselect(input_);
     board.unselect(target_);
+
+    /**
+     * isInCheck for white and black
+     * if is for w/b print CHECK
+     * set king check
+     * next turn with checkmode = 1
+     * movevalidator getkingmovements
+     * if no movement checkmate turn_limit = 0
+     * else make the move then call isincheck again till valid
+     */
 
     whites_turn_ = !whites_turn_;
 

@@ -8,4 +8,5 @@ namespace Color {
     const std::string ORANGE_ON_BLACK_BG = "\033[48;2;255;100;0m";
     const std::string ORANGE_ON_WHITE_BG = "\033[48;2;255;160;64m";
     const std::string RED_BG = "\033[48;2;255;51;51m";
+    const std::string CHECK_RED = "\033[31m";
 }
