@@ -62,7 +62,7 @@ class MoveValidator {
      * @brief Validate moveable and capturable positions and fill the respective vectors
      * @param input Position of the piece whose moves will be validated
      */
-    void setPositions(Position& input);
+    void setPositions(const Position& inp);
 
     /**
      * @brief Clear moveable into and capturable positions vectors
@@ -81,4 +81,18 @@ class MoveValidator {
      * @return Move type MOVE_TYPE
      */
     MOVE_TYPE validateMove(const Position& target);
+
+    /**
+     * @brief Check if "check"
+     * @param white The color you want to check
+     * @return True if check
+     */
+    bool isInCheck(bool white);
+
+    /**
+     * @brief Check for king
+     * @param white The color you want to check
+     * @return True if there isn't any king
+     */
+    bool noKing(bool white);
 };

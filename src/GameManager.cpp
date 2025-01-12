@@ -276,6 +276,16 @@ void GameManager::startGame() {
     board.unselect(input_);
     board.unselect(target_);
 
+    if (validator.isInCheck(whites_turn_) || validator.isInCheck(!whites_turn_)) {
+      std::cout << Color::RED_BG << "= = = = = C H E C K = = = = =" << Color::RESET << std::endl;
+      check_mode_ = true;
+    }
+
+    if (validator.noKing(whites_turn_)) {
+        std::cout << Color::RED_BG << "= = = = = G A M E O V E R = = = = =" << Color::RESET << std::endl;
+        turn_limit_ = 1;
+    }
+
     /**
      * isInCheck for white and black
      * if is for w/b print CHECK
@@ -283,7 +293,8 @@ void GameManager::startGame() {
      * next turn with checkmode = 1
      * movevalidator getkingmovements
      * if no movement checkmate turn_limit = 0
-     * else make the move then call isincheck again till valid
+     * call isincheck for every possible movement of king
+     * 
      */
 
     whites_turn_ = !whites_turn_;

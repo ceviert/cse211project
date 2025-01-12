@@ -24,8 +24,9 @@ const Position l_shape_directions[8] = {
 
 MoveValidator::MoveValidator(ChessBoard& board) : board_(board) {}
 
-void MoveValidator::setPositions(Position& input) {
+void MoveValidator::setPositions(const Position& inp) {
   moveable_into_positions_.clear();
+  Position input = inp;
 
   auto& tiles = board_.getChessTiles();
   const auto& tile = tiles[input.y][input.x];
@@ -220,5 +221,37 @@ MOVE_TYPE MoveValidator::validateMove(const Position& target) {
 
 bool MoveValidator::checkBounds(Position& pos) {
   if (0 > pos.x || pos.x >= rowcol_ || 0 > pos.y || pos.y >= rowcol_) return false;
+  return true;
+}
+
+bool MoveValidator::isInCheck(bool white) {
+  // if white = 1 check for whites king else blacks
+
+  auto& tiles = board_.getChessTiles();
+  for (const auto& row : tiles) {
+    for (const auto& tile : row) {
+      if (tile.white == white || !tile.tile_type.is_occupied) continue;
+      setPositions(tile.position);
+      for (const auto& pos : capturable_positions_) {
+        if (tiles[pos.y][pos.x].piece_type == "king") {
+          tiles[pos.y][pos.x].tile_type.check = true;
+          tiles[pos.y][pos.x].tile_type.normal_tile = false;
+          return true;
+        }
+      }
+      clearPositions();
+    }
+  }
+  return false;
+}
+
+bool MoveValidator::noKing(bool white) {
+  auto& tiles = board_.getChessTiles();
+  for (const auto& row : tiles) {
+    for (const auto& tile : row) {
+      if (tile.white == white || !tile.tile_type.is_occupied) continue;
+      if (tile.piece_type == "king") return false;
+    }
+  }
   return true;
 }

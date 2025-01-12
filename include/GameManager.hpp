@@ -3,6 +3,7 @@
 #include "ConfigReader.hpp"
 #include "ChessBoard.hpp"
 #include "MoveValidator.hpp"
+#include "Color.hpp"
 #include <iostream>
 #include <typeinfo>
 #include <algorithm>

@@ -161,7 +161,6 @@ void ChessBoard::move(const Position& from, const Position& to) {
     tile_to = tile_from;
     clearTile(from);
     Position ep_pawn = {from.x - (from.x - to.x), from.y};
-    std::cout << "EP PAWN: (" << ep_pawn.x << ", " << ep_pawn.y << ")" << std::endl;
     clearTile(ep_pawn);
     return;
   }
