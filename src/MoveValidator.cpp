@@ -89,16 +89,14 @@ void MoveValidator::setPositions(const Position& inp) {
     }
     if (rules.sideways) { // CHECK HORIZONTAL
       const Position& right = directions[0];
-      i = rules.forward;
-      for (i = rules.forward, input = sumPositions(input, right); checkBounds(input) && check(input) && i; input = sumPositions(input, right), i--) {
+      for (i = rules.sideways, input = sumPositions(input, right); checkBounds(input) && check(input) && i; input = sumPositions(input, right), i--) {
           moveable_into_positions_.push_back(input);
       }
       if (checkBounds(input) && tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);
       input = original;
 
       const Position& left = directions[1];
-      i = rules.forward;
-      for (i = rules.forward, input = sumPositions(input, left); checkBounds(input) && check(input) && i; input = sumPositions(input, left), i--) {
+      for (i = rules.sideways, input = sumPositions(input, left); checkBounds(input) && check(input) && i; input = sumPositions(input, left), i--) {
           moveable_into_positions_.push_back(input);
       }
       if (checkBounds(input) && tiles[input.y][input.x].white != tile.white) capturable_positions_.push_back(input);

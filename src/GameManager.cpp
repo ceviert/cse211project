@@ -153,40 +153,40 @@ void GameManager::startMenu() {
 
 bool GameManager::parseInput(std::string& input) {
   if (input.length() != 2) {
-    std::cout << "length aint 2" << std::endl;
+    std::cout << "Invalid format. Use column+row (e.g. e2)." << std::endl;
     return false;
   }
   
-  int i = static_cast<int>(input.at(1)) - 48;
-  
-  if (typeid(input.at(0)) != typeid(char) || typeid(i) != typeid(int)) {
-    std::cout << typeid(input.at(0)).name() << " " << typeid(char).name() << "\n";
-    std::cout << typeid(i).name() << " " << typeid(int).name();
+  char col = input.at(0);
+  char row_ch = input.at(1);
+
+  if (col < 'a' || col > 'z' || row_ch < '1' || row_ch > '9') {
+    std::cout << "Invalid position. Column must be a letter, row must be 1-9." << std::endl;
     return false;
   }
 
-  InputPosition position{input.at(0), i};
-
+  int i = static_cast<int>(row_ch) - 48;
+  InputPosition position{col, i};
   input_ = convertToPosition(position);
   return true;
 }
 
 bool GameManager::parseTarget(std::string& target) {
   if (target.length() != 2) {
-    std::cout << "length aint 2" << std::endl;
+    std::cout << "Invalid format. Use column+row (e.g. e4)." << std::endl;
     return false;
   }
   
-  int i = static_cast<int>(target.at(1)) - 48;
-  
-  if (typeid(target.at(0)) != typeid(char) || typeid(i) != typeid(int)) {
-    std::cout << typeid(target.at(0)).name() << " " << typeid(char).name() << "\n";
-    std::cout << typeid(i).name() << " " << typeid(int).name();
+  char col = target.at(0);
+  char row_ch = target.at(1);
+
+  if (col < 'a' || col > 'z' || row_ch < '1' || row_ch > '9') {
+    std::cout << "Invalid position. Column must be a letter, row must be 1-9." << std::endl;
     return false;
   }
 
-  InputPosition position{target.at(0), i};
-
+  int i = static_cast<int>(row_ch) - 48;
+  InputPosition position{col, i};
   target_ = convertToPosition(position);
   return true;
 }
@@ -198,6 +198,7 @@ void GameManager::startGame() {
   auto& tiles = board.getChessTiles();
   GameSettings settings = reader_.getGameSettings();
   turn_limit_ = settings.turn_limit;
+  whites_turn_ = true;
 
   /**
    * loop
@@ -219,6 +220,9 @@ void GameManager::startGame() {
   std::string input;
   std::string target;
   while (turn_limit_) {
+    // Clear en-passant flags at the start of each turn (valid for 1 turn only)
+    board.clearEnPassantFlags();
+
     board.print(whites_turn_);
 
     std::cout << ">";
@@ -232,14 +236,14 @@ void GameManager::startGame() {
     if (!parseInput(input) ||
           !tiles[input_.y][input_.x].tile_type.is_occupied || 
           tiles[input_.y][input_.x].white != whites_turn_) {
-      std::cout << "Invalid input, please try again" << std::endl;
+      std::cout << "Invalid selection. Pick your own piece using column+row (e.g. e2)." << std::endl;
       continue;
     }
 
     validator.setPositions(input_);
 
     if (validator.isVectorsEmpty()) {
-      std::cout << "No moves for this piece, select another" << std::endl;
+      std::cout << "No legal moves for this piece, select another." << std::endl;
       continue;
     }
 
@@ -250,7 +254,7 @@ void GameManager::startGame() {
     std::cin >> target;
 
     if (!parseTarget(target)) {
-      std::cout << "Invalid target, please try again" << std::endl;
+      std::cout << "Invalid target. Use column+row (e.g. e4)." << std::endl;
       validator.clearPositions();
       board.unselect(input_);
       continue;
@@ -259,15 +263,15 @@ void GameManager::startGame() {
     MOVE_TYPE type = validator.validateMove(target_);
 
     switch (type) {
-      case 0: // INVALID
-        std::cout << "Invalid target, please try again" << std::endl;
+      case INVALID:
+        std::cout << "That square is not a legal move. Try again." << std::endl;
         board.unselect(input_);
         validator.clearPositions();
         continue;
-      case 1: // MOVE
+      case MOVE:
         board.move(input_, target_);
         break;
-      case 2: // CAPTURE
+      case CAPTURE:
         board.move(input_, target_);
         break;
     }
@@ -276,15 +280,52 @@ void GameManager::startGame() {
     board.unselect(input_);
     board.unselect(target_);
 
+    // --- Pawn Promotion ---
+    int back_rank_white = board.getSqrtOfBoardSize() - 1; // y = 7 for white reaching black's side
+    int back_rank_black = 0;                              // y = 0 for black reaching white's side
+    for (auto& row : tiles) {
+      for (auto& tile : row) {
+        if (!tile.tile_type.is_occupied || tile.piece_type != "pawn") continue;
+        if ((tile.white && tile.position.y == back_rank_white) ||
+            (!tile.white && tile.position.y == back_rank_black)) {
+          std::string choice;
+          std::cout << Color::BLUE_BG << " PAWN PROMOTION! " << Color::RESET
+                    << " Choose: [q]ueen  [r]ook  [b]ishop  [n]knight\n>";
+          while (true) {
+            std::cin >> choice;
+            if (choice == "q" || choice == "Q") { tile.piece_type = "queen"; break; }
+            else if (choice == "r" || choice == "R") { tile.piece_type = "rook"; break; }
+            else if (choice == "b" || choice == "B") { tile.piece_type = "bishop"; break; }
+            else if (choice == "n" || choice == "N") { tile.piece_type = "knight"; break; }
+            else std::cout << "Invalid choice. Enter q, r, b, or n: >";
+          }
+          // Copy movement rules from config
+          for (const auto& cfg : reader_.getPieceConfigs()) {
+            if (cfg.type == tile.piece_type) {
+              tile.movement = cfg.movement;
+              break;
+            }
+          }
+          std::cout << "Promoted to " << tile.piece_type << "!" << std::endl;
+        }
+      }
+    }
+
+    // --- Check detection ---
     if (validator.isInCheck(whites_turn_) || validator.isInCheck(!whites_turn_)) {
       std::cout << Color::RED_BG << "= = = = = C H E C K = = = = =" << Color::RESET << std::endl;
       check_mode_ = true;
     }
 
     if (validator.noKing(whites_turn_)) {
-        std::cout << Color::RED_BG << "= = = = = G A M E O V E R = = = = =" << Color::RESET << std::endl;
+        std::cout << Color::RED_BG << "= = = G A M E  O V E R = = =" << Color::RESET
+                  << (whites_turn_ ? " White" : " Black") << " wins!" << std::endl;
+        board.print(whites_turn_);
         turn_limit_ = 1;
     }
+
+    whites_turn_ = !whites_turn_;
+    turn_limit_--;
 
     /**
      * isInCheck for white and black
@@ -296,9 +337,5 @@ void GameManager::startGame() {
      * call isincheck for every possible movement of king
      * 
      */
-
-    whites_turn_ = !whites_turn_;
-
-    turn_limit_--;
   }
 }

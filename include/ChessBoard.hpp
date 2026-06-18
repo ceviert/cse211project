@@ -23,7 +23,7 @@ struct TileType {
  */
 struct ChessTile {
   TileType tile_type;
-  std::string piece_type{"seks"};
+  std::string piece_type{""};
   Position position{};
   MovementRules movement{};
   bool white{false};
@@ -186,4 +186,9 @@ class ChessBoard {
      * @param pos Tile position to be resetted
      */
     void clearTile(const Position& pos);
+
+    /**
+     * @brief Clear all en-passant flags on the board (call once per turn)
+     */
+    void clearEnPassantFlags();
 };

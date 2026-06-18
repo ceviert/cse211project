@@ -103,6 +103,9 @@ void ChessBoard::print(const bool whos_turn) {
             case CAPTURABLE: // not possible (spoiler alert, it IS for en-passant)
               std::cout << Color::RED_BG << "   " << Color::RESET;
               break;
+            case CHECK: // not possible on empty tile
+              std::cout << Color::WHITE_BG << "   " << Color::RESET;
+              break;
           }
         }
       }
@@ -139,6 +142,9 @@ void ChessBoard::print(const bool whos_turn) {
               break;
             case CAPTURABLE: // not possible (spoiler alert, it IS for en-passant)
               std::cout << Color::RED_BG << "   " << Color::RESET;
+              break;
+            case CHECK: // not possible on empty tile
+              std::cout << Color::BLACK_BG << "   " << Color::RESET;
               break;
           }
         }
@@ -207,4 +213,12 @@ void ChessBoard::clearTile(const Position& pos) {
   tile.tile_type.selected_tile = false;
   tile.tile_type.normal_tile = true;
   tile.tile_type.en_passantable_tile = false;
+}
+
+void ChessBoard::clearEnPassantFlags() {
+  for (auto& row : tiles_) {
+    for (auto& tile : row) {
+      tile.tile_type.en_passantable_tile = false;
+    }
+  }
 }
